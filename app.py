@@ -1,5 +1,7 @@
+# app.py
+# Main function
+
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
-#from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMainWindow
 from window import Ui_MainWindow
 import sys
 
