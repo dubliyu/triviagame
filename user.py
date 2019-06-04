@@ -7,6 +7,8 @@
 # 3. Admin
 
 import sys
+import sqlite3
+import bcrypt
 from enum import Enum
 
 # User type enum
@@ -33,7 +35,8 @@ def password_Check(pw, repw):
 
 # Validates length of username between 2 to 20 characters
 def username_Length(username):
-  MIN_LENGTH = 2, MAX_LENGTH = 20
+  MIN_LENGTH = 2
+  MAX_LENGTH = 20
   if len(username) < MIN_LENGTH:
     print('Username too short.')
   if len(username) > MAX_LENGTH:
@@ -41,7 +44,8 @@ def username_Length(username):
 
 # Validates length of password between 6 to 20 characters
 def password_Length(password):
-  MIN_LENGTH = 6, MAX_LENGTH = 20
+  MIN_LENGTH = 6
+  MAX_LENGTH = 20
   if len(password) < MIN_LENGTH:
     print('Password too short.')
   if len(password) > MAX_LENGTH:
@@ -52,12 +56,44 @@ def password_Length(password):
 
 # Adds user to database
 # DB stuff
-#def add_User(username, password):
+def add_User(username, password):
+  # Get a hashed password
+  hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+  # Store the user
+  connection = sqlite3.connect('app.db')
+  c = connection.cursor()
+  c.execute("insert into users (username, hash) values (?, ?)", (username, hashed))
+  connection.commit()
+  connection.close()
+
+# Checks that an user has a valud password
+def authorize_Login(username, password):
+  connection = sqlite3.connect('app.db')
+  c = connection.cursor()
+  c.execute("select * from users where username=?", username)
+  connection.close()
+  for row in c:
+    # Check matching row
+    if bcrypt.checkpw(password.encode('utf-8'), row[1]):
+      return True
+    else:
+      return False
+
+  # There was no match
+  return False
 
 # Checks existing usernames 
 # DB stuff
-#def check_Usernames(username):
-# if username in 
+def check_Username(username):
+  connection = sqlite3.connect('app.db')
+  c.execute("select username from users where username=?", username)
+  connection.close()
+  for row in c:
+    # There was a matching row i.e. username allready exists
+    return False
+  # There was no match
+  return True
 
 username = input('Username: ')
 username_Length(username)
