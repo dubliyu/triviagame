@@ -55,7 +55,6 @@ def password_Length(password):
 #def upgrade_Pro()
 
 # Adds user to database
-# DB stuff
 def add_User(username, password):
   # Get a hashed password
   hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -67,7 +66,7 @@ def add_User(username, password):
   connection.commit()
   connection.close()
 
-# Checks that an user has a valud password
+# Checks that an user has a valid password
 def authorize_Login(username, password):
   connection = sqlite3.connect('app.db')
   c = connection.cursor()
@@ -84,7 +83,6 @@ def authorize_Login(username, password):
   return False
 
 # Checks existing usernames 
-# DB stuff
 def check_Username(username):
   connection = sqlite3.connect('app.db')
   c.execute("select username from users where username=?", username)

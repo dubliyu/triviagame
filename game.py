@@ -5,14 +5,9 @@
 import sys
 import time
 
-#class Game:
+class Game:
+  num_Questions = 10
 
-  # Creates a set of 10 questions from database
-  # def generate_Questions()
+  # Creates a set of questions from the database
+  # def load_Questions():
 
-# Counts down the time for a player to guess
-def countdown():
-  TIME = 30 #seconds
-  for t in range(TIME, 0, -1):
-    print(t)
-    time.sleep(1) # Delay 1 second
