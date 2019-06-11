@@ -7,12 +7,25 @@ import time
 
 class Game:
   MAX_QUESTIONS = 10
+  current_question = 0
+  question_list = []
 
   # Creates a set of questions from the database
+  # DB Stuff
   # def load_Questions():
     # srand()
     # rand()
+    # question_list.append()
 
   # Calculates the score of a user guess
-  # calculate_Score():
+  # def calculate_Score(guess):
+    #if guess / question_list[current_question].getPrice()
 
+  # def next_Question():
+    # current_question + 1
+
+class Question:
+  num_Questions = 0
+
+  def __init__(name, price, description, path):
+    

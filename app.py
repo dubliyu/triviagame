@@ -21,7 +21,7 @@ class mywindow(QtWidgets.QMainWindow):
 
     # Login Page Buttons
     # FIX LATER - Login button (pushButton_3) should move a user to either the player or admin main menu
-    self.ui.pushButton_3.clicked.connect(self.loginBtn)
+    self.ui.pushButton_3.clicked.connect(self.PlayerMainMenu)
     self.ui.pushButton_4.clicked.connect(self.StartPage)
     
     # Register Page Buttons
@@ -29,9 +29,17 @@ class mywindow(QtWidgets.QMainWindow):
     self.ui.pushButton_8.clicked.connect(self.StartPage)
     self.ui.pushButton_7.clicked.connect(self.StartPage)
 
-
     self.ui.pushButton_10.clicked.connect(self.LoginPage)
+
+    # Player Main Menu Buttons
     self.ui.pushButton_12.clicked.connect(self.GamePage)
+    self.ui.pushButton_13.clicked.connect(self.RecordsPage)
+
+    # Records Buttons
+    self.ui.pushButton_18.clicked.connect(self.PlayerMainMenu)
+
+    # Leaderboard Buttons
+    self.ui.pushButton_19.clicked.connect(self.PlayerMainMenu)
 
     self.ui.lcdNumber.display(30)
     t = Thread(target=self._countdown)
@@ -79,6 +87,9 @@ class mywindow(QtWidgets.QMainWindow):
   # After game is over, moves to final score page.
   def ScorePage(self):
     self.ui.stackedWidget.setCurrentIndex(6)
+
+  def RecordsPage(self):
+    self.ui.stackedWidget.setCurrentIndex(7)
 
   # Updates Game UI elements with data on next question
   # def next_Question():

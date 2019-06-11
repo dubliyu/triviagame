@@ -36,7 +36,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page">
      <widget class="QWidget" name="verticalLayoutWidget">
@@ -53,14 +53,7 @@
         <enum>QLayout::SetMaximumSize</enum>
        </property>
        <item>
-        <widget class="QGraphicsView" name="graphicsView">
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-        </widget>
+        <widget class="QGraphicsView" name="graphicsView"/>
        </item>
        <item>
         <widget class="QLabel" name="label">
@@ -884,6 +877,13 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
+          <widget class="QPushButton" name="pushButton_18">
+           <property name="text">
+            <string>Back</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer_9">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -1031,6 +1031,13 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_12">
          <item>
+          <widget class="QPushButton" name="pushButton_19">
+           <property name="text">
+            <string>Back</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer_14">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -1092,7 +1099,7 @@
             <x>0</x>
             <y>0</y>
             <width>887</width>
-            <height>613</height>
+            <height>610</height>
            </rect>
           </property>
          </widget>
@@ -1175,6 +1182,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
  <connections/>
 </ui>
