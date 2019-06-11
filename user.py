@@ -66,7 +66,7 @@ def add_User(username, password):
   connection.commit()
   connection.close()
 
-# Checks that an user has a valid password
+# Checks that a user has a valid password
 def authorize_Login(username, password):
   connection = sqlite3.connect('app.db')
   c = connection.cursor()
@@ -82,7 +82,7 @@ def authorize_Login(username, password):
   # There was no match
   return False
 
-# Checks existing usernames 
+# Checks input against existing usernames 
 def check_Username(username):
   connection = sqlite3.connect('app.db')
   c.execute("select username from users where username=?", username)

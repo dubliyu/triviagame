@@ -15,21 +15,23 @@ class mywindow(QtWidgets.QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
 
+    # Start Page Buttons
     self.ui.pushButton.clicked.connect(self.LoginPage)
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
 
-    # FIX LATER - Login button should move a user to either the player or admin main menu
-    self.ui.pushButton_3.clicked.connect(self.PlayerMainMenu)
-
+    # Login Page Buttons
+    # FIX LATER - Login button (pushButton_3) should move a user to either the player or admin main menu
+    self.ui.pushButton_3.clicked.connect(self.loginBtn)
     self.ui.pushButton_4.clicked.connect(self.StartPage)
+    
+    # Register Page Buttons
+    # FIX LATER - Register button (pushbutton_8) should add user to DB and return to player or admin main menu
+    self.ui.pushButton_8.clicked.connect(self.StartPage)
     self.ui.pushButton_7.clicked.connect(self.StartPage)
 
-    # FIX LATER - Register button should add user to DB and return to player or admin main menu
-    self.ui.pushButton_8.clicked.connect(self.StartPage)
 
     self.ui.pushButton_10.clicked.connect(self.LoginPage)
     self.ui.pushButton_12.clicked.connect(self.GamePage)
-    #self.ui.label_2.setGeometry(QtCore.QRect(0, 0, 100, 100))
 
     self.ui.lcdNumber.display(30)
     t = Thread(target=self._countdown)
@@ -44,6 +46,10 @@ class mywindow(QtWidgets.QMainWindow):
   def btnClicked(self):
     self.ui.label_2.setFont(QtGui.QFont('SansSerif', 30))
     self.ui.label_2.setText("Button Clicked")
+
+  def loginBtn(self):
+    self.ui.lineEdit.text()
+    self.ui.lineEdit_2.text()
 
   # Moves to start page
   def StartPage(self):
@@ -76,6 +82,12 @@ class mywindow(QtWidgets.QMainWindow):
 
   # Updates Game UI elements with data on next question
   # def next_Question():
+
+  # Displays user's score on score page
+  # def display_Score():
+
+# Loads images of questions for Q. Manager
+# def load_Images():
 
 app = QtWidgets.QApplication([])
 w = mywindow()
