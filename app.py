@@ -6,6 +6,7 @@ from window import Ui_MainWindow
 from threading import Thread
 import time
 import sys
+import user
 
 # One Main Window, Multiple QStackedWidgets
 
@@ -26,7 +27,7 @@ class mywindow(QtWidgets.QMainWindow):
     
     # Register Page Buttons
     # FIX LATER - Register button (pushbutton_8) should add user to DB and return to player or admin main menu
-    self.ui.pushButton_8.clicked.connect(self.StartPage)
+    self.ui.pushButton_8.clicked.connect(self.Register)
     self.ui.pushButton_7.clicked.connect(self.StartPage)
 
     self.ui.pushButton_10.clicked.connect(self.LoginPage)
@@ -96,6 +97,30 @@ class mywindow(QtWidgets.QMainWindow):
 
   # Displays user's score on score page
   # def display_Score():
+
+  def username_Msg(self):
+    self.ui.label_14.setText('Username must only contain alphanumeric characters and be 2 to 20 characters long.')
+
+  def password_Match_Msg(self):
+    self.ui.label_15.setText("Passwords must match.")
+
+  def Register(self):
+    username = self.ui.lineEdit_3.text()
+    password = self.ui.lineEdit_4.text()
+    re_password = self.ui.lineEdit_5.text()
+
+    if user.validate_Username(username) == False:
+      self.username_Msg()
+      return
+    if user.username_Length(username) != 'VALID':
+      self.username_Msg()
+      return
+
+    print('Registration successful!')
+
+    #password_Match_Msg if not validate_Password(password)
+
+    
 
 # Loads images of questions for Q. Manager
 # def load_Images():

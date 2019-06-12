@@ -26,21 +26,27 @@ class Player:
     #self.user = user_type
     games_played = 0
 
+# Checks that username only has alphanumeric characters
+def validate_Username(user):
+  return True if user.isalnum() else False
+
+# Checks password only contains allowed characters
+# Alphanumeric and certain special ones ()
+#def validate_Password(user):
+  #
+
 # Checks that password inputs match
-def password_Check(pw, repw):
-  if pw == repw:
-    return True
-  else:
-    return False
+def password_Match(pw, repw):
+  return True if (pw == repw) else False
 
 # Validates length of username between 2 to 20 characters
 def username_Length(username):
   MIN_LENGTH = 2
   MAX_LENGTH = 20
-  if len(username) < MIN_LENGTH:
-    print('Username too short.')
-  if len(username) > MAX_LENGTH:
-    print('Username too long.')
+  if len(username) >= MIN_LENGTH or len(username) <= MAX_LENGTH:
+    return True # Valid length
+  else:
+    return False
 
 # Validates length of password between 6 to 20 characters
 def password_Length(password):
@@ -93,13 +99,9 @@ def check_Username(username):
   # There was no match
   return True
 
-username = input('Username: ')
-username_Length(username)
-
-password = input('Password: ')
-password_Length(password)
-re_password = input('Re-enter Password: ')
-#player1 = Player(username, password, STANDARD)
-
-print(password_Check(password, re_password))
+# Registers user with username and password
+def register(username, password, re_password):
+  validate_Username(username)
+  validate_Password(password)
+  
 
