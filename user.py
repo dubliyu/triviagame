@@ -11,95 +11,93 @@ import sqlite3
 import bcrypt
 from enum import Enum
 
+# Statics
+MIN_LENGTH = 4
+MAX_LENGTH = 20
+
 # User type enum
 class user_type(Enum):
   STANDARD = 0
   PRO = 1
   ADMIN = 2
 
+# User class
 class Player:
-  num_users = 0
+  # Class properties
+  user_id = -1
+  games_played = -1
+  is_logged_in = False
+  username = ""
+  user_type = -1
 
-  def __init__(self, username, pw):
-    self.username = username
-    self.password = pw
-    #self.user = user_type
-    games_played = 0
+  def __init__(self, username, password):
+    # Attempt to retrieve user from db
+    db_data = self.attemp_login(username, password)
 
-# Checks that password inputs match
-def password_Check(pw, repw):
-  if pw == repw:
-    return True
-  else:
-    return False
+    # Check if user was logged in
+    if not db_data == []:
+      # Set instance properties
+      self.is_logged_in = True
+      self.user_id = db_data[0]
+      self.username = db_data[1]
+      self.games_played = db_data[3]
+      self.user_type = db_data[4]
 
-# Validates length of username between 2 to 20 characters
-def username_Length(username):
-  MIN_LENGTH = 2
-  MAX_LENGTH = 20
-  if len(username) < MIN_LENGTH:
-    print('Username too short.')
-  if len(username) > MAX_LENGTH:
-    print('Username too long.')
+  # Checks that password inputs match
+  @staticmethod
+  def password_Check(pw, repw):
+    return pw == repw
 
-# Validates length of password between 6 to 20 characters
-def password_Length(password):
-  MIN_LENGTH = 6
-  MAX_LENGTH = 20
-  if len(password) < MIN_LENGTH:
-    print('Password too short.')
-  if len(password) > MAX_LENGTH:
-    print('Password too long.')
+  # Validates length of username/password
+  @staticmethod
+  def length_check(word):
+    return len(word) < MIN_LENGTH or len(word) > MAX_LENGTH
 
-# Upgrades player to pro
-#def upgrade_Pro()
+  # Checks input against existing usernames 
+  @staticmethod
+  def check_Username(username):
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select username from users where username=?", (username,))
+    fetch = c.fetchone()
+    connection.close()
+    return not fetch == None
 
-# Adds user to database
-def add_User(username, password):
-  # Get a hashed password
-  hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+  # Adds user to database
+  @staticmethod
+  def add_User(username, password):
+    # Get a hashed password
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-  # Store the user
-  connection = sqlite3.connect('app.db')
-  c = connection.cursor()
-  c.execute("insert into users (username, hash) values (?, ?)", (username, hashed))
-  connection.commit()
-  connection.close()
+    # Store the user
+    connection = sqlite3.connect('app.db')
+    connection.execute("insert into users (username, hash) values (?, ?);", (username, hashed))
+    connection.commit()
+    connection.close()
 
-# Checks that a user has a valid password
-def authorize_Login(username, password):
-  connection = sqlite3.connect('app.db')
-  c = connection.cursor()
-  c.execute("select * from users where username=?", username)
-  connection.close()
-  for row in c:
-    # Check matching row
-    if bcrypt.checkpw(password.encode('utf-8'), row[1]):
-      return True
-    else:
-      return False
+  # Upgrades player to pro
+  def upgrade_Pro(self):
+    connection = sqlite3.connect('app.db')
+    connection.execute("update users set user_type=? where user_id=?;", (user_type.PRO, self.user_id))
+    connection.commit()
+    connection.close()
 
-  # There was no match
-  return False
+  # Attempt a login
+  def attemp_login(self, username, password):
+    # Get user from db
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select rowid, * from users where username=?;", (username,))
+    fetch = c.fetchone()
+    connection.close()
 
-# Checks input against existing usernames 
-def check_Username(username):
-  connection = sqlite3.connect('app.db')
-  c.execute("select username from users where username=?", username)
-  connection.close()
-  for row in c:
-    # There was a matching row i.e. username allready exists
-    return False
-  # There was no match
-  return True
+    # Check match
+    if fetch == None:
+      return []
 
-username = input('Username: ')
-username_Length(username)
+    # Check password
+    if bcrypt.checkpw(password.encode('utf-8'), fetch[2]):
+      return fetch
 
-password = input('Password: ')
-password_Length(password)
-re_password = input('Re-enter Password: ')
-#player1 = Player(username, password, STANDARD)
-
-print(password_Check(password, re_password))
-
+    # Bad password
+    return []
