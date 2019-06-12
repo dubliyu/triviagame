@@ -27,5 +27,12 @@ class Game:
 class Question:
   num_Questions = 0
 
-  def __init__(name, price, description, path):
-    
+  #def __init__(name, price, description, img_path):
+  
+  # Sets price of question item
+  # def setPrice(price):
+    #self.price = price
+
+  # Returns price of question item
+  #def getPrice():
+    #return self.price

@@ -74,14 +74,16 @@ class mywindow(QtWidgets.QMainWindow):
 
     # Validate
     if Player.length_check(username) or Player.length_check(password) or Player.length_check(re_password):
-      show_error(page, "Credentials have invalid length")
+      show_error(page, "Credentials have invalid length.")
       page.ui.lineEdit_4.setText("")
       page.ui.lineEdit_5.setText("")
     elif Player.check_Username(username):
-      show_error(page, "Username is taken")
+      show_error(page, "Username is taken.")
       page.ui.lineEdit_3.setText("")
       page.ui.lineEdit_4.setText("")
       page.ui.lineEdit_5.setText("")
+    #elif Player.is_alnum(username):
+      #show_error(page, "Username can only contain alphanumeric characters.")
     else:
       # insert into user
       Player.add_User(username, password)
@@ -141,7 +143,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 def show_error(page, error):
   # TODO - Add an error container to each page? At least login
-  print(error)
+  page.ui.error_register_label.setText(error)
 
 # Loads images of questions for Q. Manager
 # def load_Images():
