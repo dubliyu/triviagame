@@ -4,6 +4,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread
+from user import *
 import time
 import sys
 import user
@@ -21,13 +22,11 @@ class mywindow(QtWidgets.QMainWindow):
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
 
     # Login Page Buttons
-    # FIX LATER - Login button (pushButton_3) should move a user to either the player or admin main menu
-    self.ui.pushButton_3.clicked.connect(self.PlayerMainMenu)
+    self.ui.pushButton_3.clicked.connect(self.passoff_login)
     self.ui.pushButton_4.clicked.connect(self.StartPage)
     
     # Register Page Buttons
-    # FIX LATER - Register button (pushbutton_8) should add user to DB and return to player or admin main menu
-    self.ui.pushButton_8.clicked.connect(self.Register)
+    self.ui.pushButton_8.clicked.connect(self.passoff_register)
     self.ui.pushButton_7.clicked.connect(self.StartPage)
 
     self.ui.pushButton_10.clicked.connect(self.LoginPage)
@@ -45,6 +44,48 @@ class mywindow(QtWidgets.QMainWindow):
     self.ui.lcdNumber.display(30)
     t = Thread(target=self._countdown)
     t.start()
+
+  # Passover control flow login to main menu
+  def passoff_login(page):
+    # Get input data
+    username = page.ui.lineEdit.text()
+    password = page.ui.lineEdit_2.text()
+
+    # Validate
+    if Player.length_check(username) or Player.length_check(password):
+      show_error(page, "Credentials have invalid length")
+      page.ui.lineEdit_2.setText("")
+    else:
+      # Create user obj
+      page.user_obj = Player(username, password)
+      if page.user_obj.is_logged_in:
+        page.PlayerMainMenu()
+      else:
+        # Bad login
+        show_error(page, "Invalid Username/password combination")
+        page.ui.lineEdit_2.setText("")
+
+  # Passover control flow from register to login
+  def passoff_register(page):
+    # Get input data
+    username = page.ui.lineEdit_3.text()
+    password = page.ui.lineEdit_4.text()
+    re_password = page.ui.lineEdit_5.text()
+
+    # Validate
+    if Player.length_check(username) or Player.length_check(password) or Player.length_check(re_password):
+      show_error(page, "Credentials have invalid length")
+      page.ui.lineEdit_4.setText("")
+      page.ui.lineEdit_5.setText("")
+    elif Player.check_Username(username):
+      show_error(page, "Username is taken")
+      page.ui.lineEdit_3.setText("")
+      page.ui.lineEdit_4.setText("")
+      page.ui.lineEdit_5.setText("")
+    else:
+      # insert into user
+      Player.add_User(username, password)
+      page.StartPage()
 
   def _countdown(self):
     TIME = 30 #seconds
@@ -98,29 +139,9 @@ class mywindow(QtWidgets.QMainWindow):
   # Displays user's score on score page
   # def display_Score():
 
-  def username_Msg(self):
-    self.ui.label_14.setText('Username must only contain alphanumeric characters and be 2 to 20 characters long.')
-
-  def password_Match_Msg(self):
-    self.ui.label_15.setText("Passwords must match.")
-
-  def Register(self):
-    username = self.ui.lineEdit_3.text()
-    password = self.ui.lineEdit_4.text()
-    re_password = self.ui.lineEdit_5.text()
-
-    if user.validate_Username(username) == False:
-      self.username_Msg()
-      return
-    if user.username_Length(username) != 'VALID':
-      self.username_Msg()
-      return
-
-    print('Registration successful!')
-
-    #password_Match_Msg if not validate_Password(password)
-
-    
+def show_error(page, error):
+  # TODO - Add an error container to each page? At least login
+  print(error)
 
 # Loads images of questions for Q. Manager
 # def load_Images():
