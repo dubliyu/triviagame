@@ -67,8 +67,12 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Validate
     if Player.length_check(username) or Player.length_check(password):
-      show_error(page, "Credentials have invalid length")
+      show_error(page, "Credentials have invalid length,")
       page.ui.lineEdit_2.setText("")
+    elif Player.alpha_check(username) or Player.alpha_check(password):
+      show_error(page, "Only alpha numeric usernames/passwords allowed.")
+      page.ui.lineEdit_2.setText("")
+      page.ui.lineEdit.setText("")
     else:
       # Create user obj
       page.user_obj = Player(username, password)
@@ -76,7 +80,7 @@ class Main_Window(QtWidgets.QMainWindow):
         page.PlayerMainMenu()
       else:
         # Bad login
-        show_error(page, "Invalid Username/password combination")
+        show_error(page, "Invalid Username/password combination.")
         page.ui.lineEdit_2.setText("")
 
   # Passover control flow from register to login
@@ -91,13 +95,15 @@ class Main_Window(QtWidgets.QMainWindow):
       show_error(page, "Credentials have invalid length.")
       page.ui.lineEdit_4.setText("")
       page.ui.lineEdit_5.setText("")
+    elif Player.alpha_check(username) or Player.alpha_check(password):
+      show_error(page, "Only alpha numeric usernames/passwords allowed.")
+      page.ui.lineEdit_4.setText("")
+      page.ui.lineEdit_5.setText("")
     elif Player.check_Username(username):
       show_error(page, "Username is taken.")
       page.ui.lineEdit_3.setText("")
       page.ui.lineEdit_4.setText("")
       page.ui.lineEdit_5.setText("")
-    #elif Player.is_alnum(username):
-      #show_error(page, "Username can only contain alphanumeric characters.")
     else:
       # insert into user
       Player.add_User(username, password)
