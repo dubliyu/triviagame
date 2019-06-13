@@ -474,4 +474,3 @@ class Ui_MainWindow(object):
         self.label_9.setText(_translate("MainWindow", "User Statistics"))
         self.label_10.setText(_translate("MainWindow", "Username\'s Statistics"))
 
-import pix_rc
