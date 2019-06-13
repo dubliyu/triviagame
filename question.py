@@ -4,11 +4,17 @@ import sys
 import time
 import random
 import sqlite3
+import re
 
 
 class Question:
   # num_Questions = 0
   image_folder = 'img'
+
+  name = 'Product'
+  price = 0
+  description = 'Enter description'
+  img_path = 'img/default.jpeg'
   qid = -1
 
   def __init__(self, name, price, description, img_path):
@@ -18,8 +24,9 @@ class Question:
     if img_path:
       self.setImagePath(img_path)
     else:
-      self.setImagePath(self.generateImagePath())
-    self.qid = self.addQuestion(name,price,description,self.getImagePath()) #TODO this automatically pushes questions to DB when they are created, maybe change?
+      self.qid = self.addQuestion(self.getName,self.getPrice,self.getDescription,self.getImagePath()) #TODO this automatically pushes questions to DB when no img path exists, maybe change?
+      # self.setImagePath(self.generateImagePath())
+      # self.updateQuestion()
   
   def setName(self,name):
     self.name = name
@@ -29,7 +36,7 @@ class Question:
 
   # Sets price of question item
   def setPrice(self, price):
-    self.price = price
+    self.price = int(re.sub('[^0-9]', '', str(price))) #replaces all non-digits with ''
 
   # Returns price of question item
   def getPrice(self):
@@ -42,9 +49,8 @@ class Question:
     return self.description
 
   #generates the path of an image of the product
-  def generateImagePath(self):
-    question_id = random.randint(1,999999) #TODO make this either unique or equal to qid in questions table
-    return self.image_folder + '\\' +  f'{question_id:>06}.jpg' #6 character filename with padding
+  def generateImagePath(self): #TODO this is not currently used
+    return (self.image_folder + '\\' +  f'{self.getID():>06}.jpeg') #6 character filename with padding
     
   def setImagePath(self,img_path):
     self.img_path = img_path
@@ -64,6 +70,7 @@ class Question:
     connection = sqlite3.connect('app.db')
     total = connection.execute("select count(*) from questions;").fetchone()[0]
     connection.close()
+    # print(f'Total is : {total}')
     return total;
 
   @staticmethod
@@ -78,25 +85,25 @@ class Question:
   @staticmethod
   def removeQuestion(qid):
     connection = sqlite3.connect('app.db')
-    connection.execute("delete from questions where qid=?;", (qid))
+    connection.execute("delete from questions where qid=?;", (qid,))
     connection.commit()
     connection.close()
     
 
   @staticmethod
-  def createQuestion(qid = 0):
+  def createQuestion(qid_input = 0):
     connection = sqlite3.connect('app.db')
     c = connection.cursor()
-    c.execute("select * from questions where qid=?", (qid))
-    question = c.fetchall()
+    c.execute("select * from questions where qid=?;", (qid_input,))
+    question = c.fetchone()
     connection.close()
-    return Question(question[1], question[2], quesiton[3], question[4])
+    return Question(question[1], question[2], question[3], question[4])
 
   def loadQuestion(self): #pulls question from database and replaces local values
     connection = sqlite3.connect('app.db')
     c = connection.cursor()
-    c.execute("select * from questions where qid=?", (self.getID()))
-    question = c.fetchall()
+    c.execute("select * from questions where qid=?;", (self.getID(),))
+    question = c.fetchone()
     connection.close()
     self.setName(question[1])
     self.setPrice(question[2])
@@ -112,9 +119,17 @@ class Question:
     self.qid))
     connection.commit()
     connection.close()
-    return
 
-
+  @staticmethod
+  def get_question_ids(): #returns a list of all qids current in database
+    qid_list = []
+    connection = sqlite3.connect('app.db')
+    cursor = connection.cursor()
+    qid_selection = cursor.execute("select qid from questions;").fetchall()
+    connection.close()
+    for x in range(len((qid_selection))): #TODO this can be cleaned up.  just converts 'list of tuples containing 1 int into list of ints
+      qid_list.append(qid_selection[x][0])
+    return qid_list
 
 
 if __name__ == '__main__': #Manually inserting a question (dev tool)
@@ -124,12 +139,25 @@ if __name__ == '__main__': #Manually inserting a question (dev tool)
     price_input = input('Price: ')
     description_input = input('Description:')
     question = Question(name_input,price_input,description_input,None)
-    # path_input = generatePath()
     print('Please place image file at ' + question.getImagePath())
     print(f'\nTotal number of questions so far:{Question.totalQuestions()}' )
 
     add_question_input = input('Add another question? (Y/N):')
     # Question.
+  test_list = Question.get_question_ids()
+  qid_list_selection = input('Show list of QIDs (Y/N): ')
+  if qid_list_selection == 'Y' or qid_list_selection == 'y':
+    print(test_list)
 
+  x = 1
+  delete_questions = input(f'[{x}/10] Delete all questions?: (Y/N): ')
 
-  #input("Launch the ui?")
+  while delete_questions == 'Y' or delete_questions == 'y':
+    x = x + 1
+    if x > 10:
+      for y in test_list:
+        Question.removeQuestion(y)
+        print(f'attemped to remove question {y}')
+      break
+    else:
+      delete_questions = input(f'[{x}/10] Delete all questions?: (Y/N): ')
