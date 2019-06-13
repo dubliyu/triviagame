@@ -9,6 +9,7 @@
 import sys
 import sqlite3
 import bcrypt
+import re
 from enum import Enum
 
 # Statics
@@ -52,6 +53,10 @@ class Player:
   @staticmethod
   def length_check(word):
     return len(word) < MIN_LENGTH or len(word) > MAX_LENGTH
+
+  # Validate alpha numeric
+  def alpha_check(word):
+    return not re.match('^\w+$', word)
 
   # Checks input against existing usernames 
   @staticmethod
