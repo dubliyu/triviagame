@@ -143,6 +143,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 def show_error(page, error):
   # TODO - Add an error container to each page? At least login
+  # error_login_label
   page.ui.error_register_label.setText(error)
 
 # Loads images of questions for Q. Manager
