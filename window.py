@@ -223,9 +223,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.graphicsView_4 = QtWidgets.QGraphicsView(self.horizontalLayoutWidget)
-        self.graphicsView_4.setObjectName("graphicsView_4")
-        self.horizontalLayout_3.addWidget(self.graphicsView_4)
+        self.label_product_image = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.label_product_image.setObjectName("label_product_image")
+        self.horizontalLayout_3.addWidget(self.label_product_image)
         spacerItem18 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem18)
         self.textBrowser = QtWidgets.QTextBrowser(self.horizontalLayoutWidget)
@@ -474,4 +474,4 @@ class Ui_MainWindow(object):
         self.label_9.setText(_translate("MainWindow", "User Statistics"))
         self.label_10.setText(_translate("MainWindow", "Username\'s Statistics"))
 
-import pix_rc
+# import pix_rc

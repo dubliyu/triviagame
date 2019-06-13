@@ -1,6 +1,7 @@
 # question.py
 #  Question getters/setter and Database i/o
 import sys
+from pathlib import Path
 import time
 import random
 import sqlite3
@@ -14,7 +15,8 @@ class Question:
   name = 'Product'
   price = 0
   description = 'Enter description'
-  img_path = 'img/default.jpeg'
+  default_path = 'img\\default.jpeg'
+  img_path =  default_path
   qid = -1
 
   def __init__(self, name, price, description, img_path):
@@ -24,12 +26,12 @@ class Question:
     if img_path:
       self.setImagePath(img_path)
     else:
-      self.qid = self.addQuestion(self.getName,self.getPrice,self.getDescription,self.getImagePath()) #TODO this automatically pushes questions to DB when no img path exists, maybe change?
-      # self.setImagePath(self.generateImagePath())
-      # self.updateQuestion()
+      self.qid = self.addQuestion(self.getName(),self.getPrice(),self.getDescription(),self.getImagePath()) #TODO this automatically pushes questions to DB when no img path exists, maybe change?
+      self.setImagePath(self.generateImagePath())
+      self.updateQuestion()
   
   def setName(self,name):
-    self.name = name
+    self.name = str(name)
 
   def getName(self):
     return self.name
@@ -43,21 +45,25 @@ class Question:
     return self.price
 
   def setDescription(self,description):
-    self.description =  description
+    self.description =  str(description)
 
   def getDescription(self):
     return self.description
 
   #generates the path of an image of the product
   def generateImagePath(self): #TODO this is not currently used
-    return (self.image_folder + '\\' +  f'{self.getID():>06}.jpeg') #6 character filename with padding
+    return self.image_folder + '\\' +  f'{self.getID():>06}.jpeg' #6 character filename with padding
     
   def setImagePath(self,img_path):
-    self.img_path = img_path
+    self.img_path = str(img_path)
   
   #get the path to the image of the product
   def getImagePath(self):
-    return self.img_path
+    file = Path(self.img_path)
+    if file.is_file():
+      return self.img_path
+    else:
+      return self.default_path
 
   def getID(self):
     return self.qid
@@ -78,7 +84,7 @@ class Question:
     connection = sqlite3.connect('app.db')
     connection.execute("insert into questions (name, price, description, image) values (?, ?, ?, ?);", (name, price, description, img_path))
     connection.commit()
-    qid = connection.execute("select last_insert_rowid()").fetchone()
+    qid = connection.execute("select last_insert_rowid()").fetchone()[0]
     connection.close()
     return qid;
 
@@ -112,11 +118,7 @@ class Question:
 
   def updateQuestion(self): #pushes local (changed) values to database
     connection = sqlite3.connect('app.db')
-    connection.execute("update questions set (name, price, description, image) values (?, ?, ?, ?) where qid=?;", (self.getName(),
-    self.getPrice(),
-    self.getDescription(),
-    self.getImagePath(),
-    self.qid))
+    connection.execute("update questions set (name, price, description, image)=(?, ?, ?, ?) where qid=?;",(self.getName(),self.getPrice(),self.getDescription(),self.getImagePath(),self.qid))
     connection.commit()
     connection.close()
 
@@ -150,7 +152,7 @@ if __name__ == '__main__': #Manually inserting a question (dev tool)
     print(test_list)
 
   x = 1
-  delete_questions = input(f'[{x}/10] Delete all questions?: (Y/N): ')
+  delete_questions = input(f'[{x}/10] Delete all question: (Y/N): ')
 
   while delete_questions == 'Y' or delete_questions == 'y':
     x = x + 1
