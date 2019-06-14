@@ -1,10 +1,7 @@
+# =============================================================================
 # user.py
-# User classes and methods
-#
-# User Classes:
-# 1. Standard Player
-# 2. Pro Player
-# 3. Admin
+# This module defines User classes and methods, including database I/O.
+# =============================================================================
 
 import sys
 import sqlite3

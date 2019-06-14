@@ -1,6 +1,8 @@
+# =============================================================================
 # game.py
-# Game class and methods
-# Defines behavior and functionality of game mechanics
+# This module defined the Game class and methods, including game behavior 
+# and functionality of game mechanics
+# =============================================================================
 
 import sys
 import time

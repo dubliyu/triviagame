@@ -1,5 +1,12 @@
+# =============================================================================
 # app.py
-# Main function
+# This module contains the main function and GUI functionality.
+# =============================================================================
+#
+# Note: To launch game, 'python app.py'.
+# Note 2: To update .ui file, compile the .ui file to a .py file with
+#         'pyuic5 window.ui -o window.py'.
+#
 
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from PyQt5.QtGui import QIcon, QPixmap
@@ -43,6 +50,7 @@ class Main_Window(QtWidgets.QMainWindow):
     # Player Main Menu Buttons
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.RecordsPage)
+    #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
     # Game buttons
     self.ui.pushButton_9.clicked.connect(self.next_question_button)
@@ -155,7 +163,6 @@ class Main_Window(QtWidgets.QMainWindow):
   def calculate_score(self,user_price):
     return abs(user_price -  self.game_instance.get_question().getPrice()) #TODO use an actual scoring algorithm
 
-
   def loginBtn(self):
     self.ui.lineEdit.text()
     self.ui.lineEdit_2.text()
@@ -189,8 +196,6 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.label_2.setFont(QtGui.QFont('SansSerif', 25)) #product title
     self.ui.label_3.setFont(QtGui.QFont('SansSerif', 10)) #question number
     self.load_current_question()
-
-
   
   def load_current_question(self):
     self.ui.label_3.setText(f'Q#: {self.game_instance.current_question}')
@@ -203,7 +208,6 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.textBrowser.setMinimumWidth(400)
     self.start_timer()
 
-
   # Moves to score page
   # After game is over, moves to final score page.
   def ScorePage(self):
@@ -213,8 +217,8 @@ class Main_Window(QtWidgets.QMainWindow):
   def RecordsPage(self):
     self.ui.stackedWidget.setCurrentIndex(7)
 
-  # Updates Game UI elements with data on next question
-  # def next_Question():
+  #def QuitBtn(self):
+    #sys.exit(app.exec_())
 
   # Displays user's score on score page
   # def display_Score():

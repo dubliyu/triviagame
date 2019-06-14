@@ -1,12 +1,14 @@
+# =============================================================================
 # question.py
-#  Question getters/setter and Database i/o
+# This module defines the Question class and methods, including database I/O.
+# =============================================================================
+
 import sys
 from pathlib import Path
 import time
 import random
 import sqlite3
 import re
-
 
 class Question:
   # num_Questions = 0
@@ -77,7 +79,7 @@ class Question:
     total = connection.execute("select count(*) from questions;").fetchone()[0]
     connection.close()
     # print(f'Total is : {total}')
-    return total;
+    return total
 
   @staticmethod
   def addQuestion(name, price, description, img_path):
@@ -86,7 +88,7 @@ class Question:
     connection.commit()
     qid = connection.execute("select last_insert_rowid()").fetchone()[0]
     connection.close()
-    return qid;
+    return qid
 
   @staticmethod
   def removeQuestion(qid):
