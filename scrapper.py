@@ -32,10 +32,12 @@ features = soup.find("div", {"id": "feature-bullets"})
 ul_list = features.find("ul")
 split_features = list(ul_list.stripped_strings)
 desc = ' '.join(split_features)
-print(desc)
 
 # Parse HTML file for image links
-data = json.loads(soup.find('script', type='').text)
+#data = json.loads(soup.find('script', type='text/javascript').text)
+script = soup.find_all('script', type='text/javascript')
+for stuff in script:
+  print(stuff.text)
 urls = []
 image_num = 0
 
