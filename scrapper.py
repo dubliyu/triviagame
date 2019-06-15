@@ -5,6 +5,7 @@
 # =============================================================================
 #
 # NOTE: Only tested with Amazon so far.
+# NOTE 2: Will probably define a Scrapper class, which will be passed a URL
 #
 
 from bs4 import BeautifulSoup as bs
