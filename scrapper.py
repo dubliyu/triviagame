@@ -1,11 +1,11 @@
 # =============================================================================
-# scrapper.py
+# scraper.py
 # This module scraps a given URL for product information, i.e. name, price,
 # description, and images.
 # =============================================================================
 #
 # NOTE: Only tested with Amazon so far.
-# NOTE 2: Will probably define a Scrapper class, which will be passed a URL
+# NOTE 2: Will probably define a Scraper class, which will be passed a URL
 #
 
 from bs4 import BeautifulSoup as bs
@@ -39,7 +39,7 @@ soup = bs(html, 'lxml')
 title = soup.find("span", {"id": "productTitle"}).text.strip()
 
 # Get price (as float).
-#   Scrapped as string in format "$##.##", then converted.
+# Scraped as string in format "$##.##", then converted.
 if ((soup.find("span", {"class": "a-size-medium a-color-price offer-price a-text-normal"}))):
   price = float(soup.find("span", {"class": "offer-price"}).text[1:])
 if ((soup.find("span", {"id": "price_inside_buybox"}))):
@@ -47,22 +47,25 @@ if ((soup.find("span", {"id": "price_inside_buybox"}))):
   price = price[1:]
 
 # Get description from meta tag in header.
+# Default description, in case there is none, or it was not scraped.
 desc = soup.find("meta", {"name": "description"}).get("content")
 
 # Get description from noscript tag.
-#   Some products have their descriptions listed in iframes, but they can be scrapped
-#   from the <noscript> tags, which act as a fallback, if Javascript is disabled.
+# Some products have their descriptions listed in iframes, but they can be scraped
+# from the <noscript> tags, which act as a fallback, if Javascript is disabled.
 if (soup.find("script", {"id": "bookDesc_override_CSS"})):
   desc = soup.find("script", {"id": "bookDesc_override_CSS"}).next_sibling.next_sibling.text
   desc = remove_tags(desc).strip()
 
 # Get description from unordered list.
-#   Scrapped bulleted-list for text and concatenated to description.
+# Scraped bulleted-list for text and concatenated to description.
 if (soup.find("div", {"id": "feature-bullets"})):
   desc = ''
   features = soup.find("div", {"id": "feature-bullets"}).find_all("li", {"class": None})
   for f in features:
     desc += f.text.strip() + '\n'
+
+if (soup.find)
 
 # NOT DONE! NOT DONE! NOT DONE! NOT DONE!
 # Get images (all, high-resolution)
