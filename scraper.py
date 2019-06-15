@@ -47,12 +47,13 @@ if ((soup.find("span", {"id": "price_inside_buybox"}))):
   price = price[1:]
 
 # Get description from meta tag in header.
-# Default description, in case there is none, or it was not scraped.
+# Default description.
 desc = soup.find("meta", {"name": "description"}).get("content")
 
 # Get description from noscript tag.
-# Some products have their descriptions listed in iframes, but they can be scraped
-# from the <noscript> tags, which act as a fallback, if Javascript is disabled.
+# Some products have their descriptions listed in iframes, which cannot be scraped
+# from the HTML. However, they can be scraped from the <noscript> tag, 
+# which acts as a fallback, if Javascript is disabled.
 if (soup.find("script", {"id": "bookDesc_override_CSS"})):
   desc = soup.find("script", {"id": "bookDesc_override_CSS"}).next_sibling.next_sibling.text
   desc = remove_tags(desc).strip()
@@ -64,8 +65,6 @@ if (soup.find("div", {"id": "feature-bullets"})):
   features = soup.find("div", {"id": "feature-bullets"}).find_all("li", {"class": None})
   for f in features:
     desc += f.text.strip() + '\n'
-
-if (soup.find)
 
 # NOT DONE! NOT DONE! NOT DONE! NOT DONE!
 # Get images (all, high-resolution)
