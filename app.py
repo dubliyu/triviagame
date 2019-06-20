@@ -49,7 +49,7 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Player Main Menu Buttons
     self.ui.pushButton_12.clicked.connect(self.GamePage)
-    self.ui.pushButton_13.clicked.connect(self.RecordsPage)
+    self.ui.pushButton_13.clicked.connect(self.passoff_records)
     #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
     # Game buttons
@@ -116,6 +116,33 @@ class Main_Window(QtWidgets.QMainWindow):
       # insert into user
       Player.add_User(username, password)
       page.StartPage()
+
+  # Passover logic to load the records
+  def passoff_records(page):
+    # Retrieve user records
+    records = page.user_obj.get_records()
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    sumation = 0
+    for record in records:
+      # Insert into the screen
+      sumation = sumation + record[1]
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QLabel("Played for " + str(record[1] / 60) + " minutes", page))
+      temp.addWidget(QLabel("At " + str(record[3]), page))
+      temp.addWidget(QLabel("Score" + str(record[2]), page))
+      temp.addStretch(1)
+      layout.addLayout(temp)
+    page.ui.scrollArea.setWidget(content)
+
+    # Set aveages and total
+    page.ui.label_17.setText("Games Played: " + str(len(records)))
+    page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
+
+    # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(7)
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
@@ -212,10 +239,6 @@ class Main_Window(QtWidgets.QMainWindow):
   # After game is over, moves to final score page.
   def ScorePage(self):
     self.ui.stackedWidget.setCurrentIndex(6)
-
-
-  def RecordsPage(self):
-    self.ui.stackedWidget.setCurrentIndex(7)
 
   #def QuitBtn(self):
     #sys.exit(app.exec_())
