@@ -10,7 +10,7 @@
 
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QDialog, QLabel
+from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit
 from window import Ui_MainWindow
 from threading import Thread, Timer, currentThread
 from user import *
@@ -32,18 +32,22 @@ class Main_Window(QtWidgets.QMainWindow):
     super(Main_Window, self).__init__()
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
+    self.ui.stackedWidget.setCurrentIndex(0)
   
     # Start Page Buttons
     self.ui.pushButton.clicked.connect(self.LoginPage)
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
 
-    # Login Page Buttons
+    # Login Page Elements
     self.ui.pushButton_3.clicked.connect(self.passoff_login)
     self.ui.pushButton_4.clicked.connect(self.StartPage)
+    self.ui.lineEdit_2.setEchoMode(QLineEdit.Password)
     
-    # Register Page Buttons
+    # Register Page Elements
     self.ui.pushButton_8.clicked.connect(self.passoff_register)
     self.ui.pushButton_7.clicked.connect(self.StartPage)
+    self.ui.lineEdit_4.setEchoMode(QLineEdit.Password)
+    self.ui.lineEdit_5.setEchoMode(QLineEdit.Password)
 
     self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
 
