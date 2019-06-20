@@ -52,6 +52,7 @@ class Player:
     return len(word) < MIN_LENGTH or len(word) > MAX_LENGTH
 
   # Validate alpha numeric
+  @staticmethod
   def alpha_check(word):
     return not re.match('^\w+$', word)
 
@@ -103,3 +104,12 @@ class Player:
 
     # Bad password
     return []
+
+  # Get records for the user
+  def get_records(self):
+    # Get records from db
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select * from games_played where username=?;", (self.username,))
+    self.records = c.fetchall()
+    return self.records
