@@ -10,7 +10,7 @@
 
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QDialog, QLabel
+from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit
 from window import Ui_MainWindow
 from threading import Thread, Timer, currentThread
 from user import *
@@ -27,23 +27,28 @@ class Main_Window(QtWidgets.QMainWindow):
   game_instance = Game()
   timer_thread  = Thread()
   timer_thread.start()
+  time_left = 0
 
   def __init__(self):
     super(Main_Window, self).__init__()
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
+    self.ui.stackedWidget.setCurrentIndex(0)
   
     # Start Page Buttons
     self.ui.pushButton.clicked.connect(self.LoginPage)
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
 
-    # Login Page Buttons
+    # Login Page Elements
     self.ui.pushButton_3.clicked.connect(self.passoff_login)
     self.ui.pushButton_4.clicked.connect(self.StartPage)
+    self.ui.lineEdit_2.setEchoMode(QLineEdit.Password)
     
-    # Register Page Buttons
+    # Register Page Elements
     self.ui.pushButton_8.clicked.connect(self.passoff_register)
     self.ui.pushButton_7.clicked.connect(self.StartPage)
+    self.ui.lineEdit_4.setEchoMode(QLineEdit.Password)
+    self.ui.lineEdit_5.setEchoMode(QLineEdit.Password)
 
     self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
 
@@ -155,6 +160,7 @@ class Main_Window(QtWidgets.QMainWindow):
     running_thread = currentThread()
     while getattr(running_thread, "running", True) and count >= 0:
       self.ui.lcdNumber.display(count)
+      self.time_left = count
       time.sleep(1)
       count = count - 1
     #   print(f'{count} seconds left!')
@@ -181,14 +187,12 @@ class Main_Window(QtWidgets.QMainWindow):
   def display_score(self):
     user_price = self.ui.lineEdit_6.text()
     if user_price == '':
-      user_price = int(0)
+      user_guess = int(0)
     else:
-      user_price = int(re.sub('[^0-9]', '', self.ui.lineEdit_6.text()))
-    score_window = Score_Window(self.calculate_score(user_price),self)
+      user_guess = int(re.sub('[^0-9]', '', self.ui.lineEdit_6.text()))
+    current_score = self.game_instance.calculate_score(user_guess, self.time_left)
+    score_window = Score_Window(current_score.get_score(), current_score.get_label(), self)
     score_window.show()
-
-  def calculate_score(self,user_price):
-    return abs(user_price -  self.game_instance.get_question().getPrice()) #TODO use an actual scoring algorithm
 
   def loginBtn(self):
     self.ui.lineEdit.text()
@@ -239,6 +243,7 @@ class Main_Window(QtWidgets.QMainWindow):
   # After game is over, moves to final score page.
   def ScorePage(self):
     self.ui.stackedWidget.setCurrentIndex(6)
+    self.ui.label_11.setText(str(self.game_instance.get_final_score()))
 
   #def QuitBtn(self):
     #sys.exit(app.exec_())
@@ -247,12 +252,12 @@ class Main_Window(QtWidgets.QMainWindow):
   # def display_Score():
 
 class Score_Window(QDialog):
-  def __init__(self,score,parent=None):
+  def __init__(self,score,title,parent=None):
     super().__init__(parent)
     self.score = score
     self.label = QLabel(str(self.score), self)
     self.label.setFont(QtGui.QFont('ComicSans', 20))
-    self.setWindowTitle('Score')
+    self.setWindowTitle(title)
     self.setGeometry(100, 100, 300, 150)
     frameGm = self.frameGeometry() #center the popup on current screen
     screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
