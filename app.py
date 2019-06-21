@@ -293,10 +293,11 @@ class Main_Window(QtWidgets.QMainWindow):
       self.ui.lineEdit_8.setText(str(scrape_title(soup)))
       self.ui.lineEdit_9.setText(str(scrape_price(soup)))
       self.ui.plainTextEdit.setPlainText(str(scrape_desc(soup)))
-      # scrape_title()
-      # scrape_desc()
-      # scrape_price()
-      # scrape_Image_URLs()
+
+      images[] = scrape_Image_URLs()
+      QWidgets.QVBoxLayout()
+      
+      # self.ui.gridLayout_3.addLayout
 
     elif is_Walmart_URL:
       return

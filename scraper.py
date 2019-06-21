@@ -178,9 +178,9 @@ def scrape_Image_URLs(soup):
   return img_urls
 
 # Downloads images to a temp folder
-def download_images(title, img_urls):
+def download_images(img_urls,title = _TEMP):
   img_num = 1 # Number for naming files
-  create_Folder(_TEMP)
+  create_Folder(title)
 
   for img in img_urls:
     file_name = Path(_TEMP + title[:10] + '_' + str(img_num) + '.jpg')
