@@ -294,8 +294,11 @@ class Main_Window(QtWidgets.QMainWindow):
       self.ui.lineEdit_9.setText(str(scrape_price(soup)))
       self.ui.plainTextEdit.setPlainText(str(scrape_desc(soup)))
 
-      images[] = scrape_Image_URLs()
-      QWidgets.QVBoxLayout()
+      images[] = 
+      def
+      
+      for image in images:
+        image_box = QtWidgets.QVBoxLayout().addItem(QtWidgets.QLabel
       
       # self.ui.gridLayout_3.addLayout
 
