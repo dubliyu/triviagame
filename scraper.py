@@ -160,7 +160,7 @@ def scrape_Image_URLs(soup):
       data = json.loads(img_json)
       img_num = len(data["imageGalleryData"])
       for x in range(0, img_num):
-        img_urls.append(data["imageGalleryData"][x]["mainUrl"])
+        self.img_urls.append(data["imageGalleryData"][x]["mainUrl"])
 
     elif 'colorImages' in img_script.text:
       # Format string to valid json format
