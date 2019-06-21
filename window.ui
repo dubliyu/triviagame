@@ -36,7 +36,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>10</number>
     </property>
     <widget class="QWidget" name="page">
      <widget class="QWidget" name="verticalLayoutWidget">
@@ -1190,8 +1190,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>887</width>
+            <height>604</height>
            </rect>
           </property>
          </widget>
@@ -1316,8 +1316,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>877</width>
+            <height>529</height>
            </rect>
           </property>
           <widget class="QWidget" name="gridLayoutWidget">
