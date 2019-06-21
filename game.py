@@ -8,6 +8,7 @@ import sys
 import time
 import random
 import math
+import sqlite3
 from question import Question
 # from app import mywindow
 
@@ -57,40 +58,47 @@ class Game:
       return True
 
   def calculate_score(self, user_guess, time):
-    MAX_SCORE = 5000 
-
-    MIN_SCORE_VERY_CLOSE = 2500
-    MIN_SCORE_CLOSE = 500
+    MAX_SCORE = 10000
+    MAX_EXACT_PERC = 0.01
+    MAX_VERY_CLOSE_PERC = 0.2
+    MAX_CLOSE_PERC = 0.4
+    TIER_PENALTY = 1000  #points you instantly lose for being in a lower tier
     score = 0
+
     score_difference = abs(self.question_list[self.current_question - 1].getPrice() - user_guess)
     percentage = float((score_difference)/(self.question_list[self.current_question - 1].getPrice())) #gets percentage difference to real price
-    print(f'Percentage difference to real score: {percentage}')
-    if(percentage <= 0.01): # exact
-      score = 5000
+    if(percentage <= MAX_EXACT_PERC): # exact
+      score = MAX_SCORE
       self.score_list.append(Score('EXACT', score, time))
       return self.score_list[self.current_question - 1]
     
-    elif(percentage <= 0.1 ): # very close
-      score =  int(MIN_SCORE_VERY_CLOSE + (MAX_SCORE - MIN_SCORE_VERY_CLOSE)*(percentage * 10))
-      self.score_list.append(Score('EXACT', score, time))
+    elif(percentage <= MAX_VERY_CLOSE_PERC ): # very close
+      score =  int((MAX_SCORE - TIER_PENALTY) * (1 - percentage))
+      self.score_list.append(Score('VERY CLOSE', score, time))
       return self.score_list[self.current_question - 1]
 
-    elif(percentage <= 0.4):#close
-      score =  int(MIN_SCORE_VERY_CLOSE + (MAX_SCORE - MIN_SCORE_VERY_CLOSE)*(percentage * 2.5))
-      self.score_list.append(Score('EXACT', score, time))
+    elif(percentage <= MAX_CLOSE_PERC):#close
+      score =  int((MAX_SCORE - (2 * TIER_PENALTY) ) * (1 - percentage))
+      self.score_list.append(Score('CLOSE', score, time))
       return self.score_list[self.current_question - 1]
 
     else: #wrong
       score = 0
-      self.score_list.append(Score('EXACT', score, time))
+      self.score_list.append(Score('WRONG', score, time))
       return self.score_list[self.current_question - 1]
     
   def get_final_score(self):
     final_score = 0
     for score in self.score_list:
       final_score = final_score + score.get_score()
-
     return final_score
+
+  def write_game(self, username, time_started):
+    duration = int(time.time()- time_started)
+    connection = sqlite3.connect('app.db')
+    connection.execute("insert into games_played (username,duration,score) values (?, ?, ?);", (username, duration, self.get_final_score() ))
+    connection.commit()
+    connection.close()
         
 class Score:
 

@@ -36,7 +36,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>10</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="page">
      <widget class="QWidget" name="verticalLayoutWidget">
@@ -736,7 +736,7 @@
        <item>
         <widget class="QPushButton" name="pushButton_9">
          <property name="text">
-          <string>&gt;</string>
+          <string>SUBMIT</string>
          </property>
         </widget>
        </item>
@@ -1096,8 +1096,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>877</width>
-            <height>576</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
          </widget>
@@ -1190,8 +1190,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>887</width>
-            <height>604</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
          </widget>
@@ -1316,8 +1316,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>877</width>
-            <height>529</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
           <widget class="QWidget" name="gridLayoutWidget">

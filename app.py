@@ -8,11 +8,9 @@
 #         'pyuic5 window.ui -o window.py'.
 #
 
-from PyQt5 import QtWidgets, QtGui, QtCore, uic
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit
+from PyQt5 import QtWidgets, QtGui, QtCore, uic 
 from window import Ui_MainWindow
-from threading import Thread, Timer, currentThread
+from threading import Thread, currentThread
 from user import *
 import re
 import time
@@ -29,6 +27,8 @@ class Main_Window(QtWidgets.QMainWindow):
   timer_thread.start()
   time_left = 0
 
+
+
   def __init__(self):
     super(Main_Window, self).__init__()
     self.ui = Ui_MainWindow()
@@ -41,14 +41,16 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Login Page Elements
     self.ui.pushButton_3.clicked.connect(self.passoff_login)
+    self.ui.lineEdit_2.returnPressed.connect(self.ui.pushButton_3.click)
     self.ui.pushButton_4.clicked.connect(self.StartPage)
-    self.ui.lineEdit_2.setEchoMode(QLineEdit.Password)
+    self.ui.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Password)
     
     # Register Page Elements
     self.ui.pushButton_8.clicked.connect(self.passoff_register)
     self.ui.pushButton_7.clicked.connect(self.StartPage)
-    self.ui.lineEdit_4.setEchoMode(QLineEdit.Password)
-    self.ui.lineEdit_5.setEchoMode(QLineEdit.Password)
+    self.ui.lineEdit_5.returnPressed.connect(self.ui.pushButton_8.click)
+    self.ui.lineEdit_4.setEchoMode(QtWidgets.QLineEdit.Password)
+    self.ui.lineEdit_5.setEchoMode(QtWidgets.QLineEdit.Password)
 
     self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
 
@@ -59,6 +61,7 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Game buttons
     self.ui.pushButton_9.clicked.connect(self.next_question_button)
+    self.ui.lineEdit_6.returnPressed.connect(self.ui.pushButton_9.click)
 
     #Score Page buttons
     self.ui.pushButton_17.clicked.connect(self.PlayerMainMenu)
@@ -135,9 +138,9 @@ class Main_Window(QtWidgets.QMainWindow):
       # Insert into the screen
       sumation = sumation + record[1]
       temp = QtWidgets.QHBoxLayout()
-      temp.addWidget(QLabel("Played for " + str(record[1] / 60) + " minutes", page))
-      temp.addWidget(QLabel("At " + str(record[3]), page))
-      temp.addWidget(QLabel("Score" + str(record[2]), page))
+      temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
+      temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
+      temp.addWidget(QtWidgets.QLabel("Score" + str(record[2]), page))
       temp.addStretch(1)
       layout.addLayout(temp)
     page.ui.scrollArea.setWidget(content)
@@ -151,6 +154,7 @@ class Main_Window(QtWidgets.QMainWindow):
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
+    self.timer_thread.daemon= True
     self.timer_thread.running = True
     self.timer_thread.start()
 
@@ -163,20 +167,29 @@ class Main_Window(QtWidgets.QMainWindow):
       self.time_left = count
       time.sleep(1)
       count = count - 1
-    #   print(f'{count} seconds left!')
-    # print('Timer stopped!')
+      if count == 0:
+        self.ui.lineEdit_6.setText('0')
+        self.ui.lineEdit_6.setReadOnly(True)
+        
+    
 
-  def stop_timer(self): #TODO stop the timer when app closes
+  def stop_timer(self): 
     self.timer_thread.running = False
     self.timer_thread.join()
 
   def next_question_button(self):
     if self.next_question_pushed == False: #if pushing submit button for first time
-      self.next_question_pushed = True
-      self.stop_timer()
-      self.display_score()
+      if self.display_score(): #if price is correctly formatted
+        self.next_question_pushed = True
+        self.ui.lineEdit_6.setReadOnly(True)
+        self.ui.pushButton_9.setText('NEXT')
+        self.stop_timer()
+      else:
+        QtWidgets.QMessageBox.about(self, 'Error','Invalid price formatting.')
     else:
+      self.ui.lineEdit_6.setReadOnly(False)
       self.ui.lineEdit_6.setText('')
+      self.ui.pushButton_9.setText('SUBMIT')
       if self.game_instance.next_question() is False: #if the last question has been reached, show score page
         self.next_question_pushed = False
         self.ScorePage()
@@ -185,14 +198,19 @@ class Main_Window(QtWidgets.QMainWindow):
         self.next_question_pushed = False
 
   def display_score(self):
-    user_price = self.ui.lineEdit_6.text()
-    if user_price == '':
-      user_guess = int(0)
+    user_price = str(self.ui.lineEdit_6.text())
+    price_int = 0
+    if re.match('^[+-]?[0-9]{1,3}(?:(,[0-9]{3})*|([0-9]{3})*)(?:\.[0-9]{2})?$', user_price ): #regex for price formatting
+      if not '.' in user_price:
+        price_int = int(re.sub('[^0-9]', '', user_price)) * 100 #if no cents indicated, make sure correct int format
+      else:
+        price_int = int(re.sub('[^0-9]', '', user_price)) #if cents used
     else:
-      user_guess = int(re.sub('[^0-9]', '', self.ui.lineEdit_6.text()))
-    current_score = self.game_instance.calculate_score(user_guess, self.time_left)
+      return False
+    current_score = self.game_instance.calculate_score(price_int, 30 - self.time_left)
     score_window = Score_Window(current_score.get_score(), current_score.get_label(), self)
     score_window.show()
+    return True
 
   def loginBtn(self):
     self.ui.lineEdit.text()
@@ -222,17 +240,19 @@ class Main_Window(QtWidgets.QMainWindow):
   # Moves to game page
   def GamePage(self):
     self.ui.stackedWidget.setCurrentIndex(5)
+    self.ui.pushButton_9.setText('SUBMIT')
     if not self.game_instance.next_question(): #loads new questions if no new questions found
       self.game_instance.load_questions()
     self.ui.label_2.setFont(QtGui.QFont('SansSerif', 25)) #product title
     self.ui.label_3.setFont(QtGui.QFont('SansSerif', 10)) #question number
     self.load_current_question()
+    self.start_time = time.time()
   
   def load_current_question(self):
     self.ui.label_3.setText(f'Q#: {self.game_instance.current_question}')
     self.ui.label_2.setText(self.game_instance.get_question().getName())
     self.ui.textBrowser.setText(self.game_instance.get_question().getDescription())
-    product_pixmap = QPixmap(self.game_instance.get_question().getImagePath())
+    product_pixmap = QtGui.QPixmap(self.game_instance.get_question().getImagePath())
     self.ui.label_product_image.setPixmap(product_pixmap)    
     self.ui.label_product_image.setScaledContents(True)
     # self.ui.label_product_image.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored) #TODO set up changes in QT designer, i couldnt get it to work -Robert
@@ -243,6 +263,7 @@ class Main_Window(QtWidgets.QMainWindow):
   # After game is over, moves to final score page.
   def ScorePage(self):
     self.ui.stackedWidget.setCurrentIndex(6)
+    self.game_instance.write_game(self.user_obj.username, self.start_time) #writes game log to DB
     self.ui.label_11.setText(str(self.game_instance.get_final_score()))
 
   #def QuitBtn(self):
@@ -251,11 +272,11 @@ class Main_Window(QtWidgets.QMainWindow):
   # Displays user's score on score page
   # def display_Score():
 
-class Score_Window(QDialog):
+class Score_Window(QtWidgets.QDialog):
   def __init__(self,score,title,parent=None):
     super().__init__(parent)
     self.score = score
-    self.label = QLabel(str(self.score), self)
+    self.label = QtWidgets.QLabel(str(self.score), self)
     self.label.setFont(QtGui.QFont('ComicSans', 20))
     self.setWindowTitle(title)
     self.setGeometry(100, 100, 300, 150)
@@ -281,5 +302,4 @@ w.setWindowTitle("Price Guessing Game")
 
 w.show()
 sys.exit(app.exec_())
-
 
