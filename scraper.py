@@ -179,7 +179,7 @@ def scrape_Image_URLs(soup):
 
 # Downloads images to a temp folder
 def download_images(title, img_urls):
-  img_num = 1 # Number for naming files
+  img_num = 0 # Number for naming files
   create_Folder(_TEMP)
 
   for img in img_urls:
