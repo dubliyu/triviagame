@@ -12,6 +12,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread, currentThread
 from user import *
+from scraper import *
 import re
 import time
 import sys
@@ -26,11 +27,16 @@ class Main_Window(QtWidgets.QMainWindow):
   timer_thread  = Thread()
   timer_thread.start()
   time_left = 0
-
+ 
 
 
   def __init__(self):
     super(Main_Window, self).__init__()
+    frameGm = self.frameGeometry() #center the windows on the current screen 
+    screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+    centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+    frameGm.moveCenter(centerPoint)
+
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.ui.stackedWidget.setCurrentIndex(0)
@@ -57,6 +63,7 @@ class Main_Window(QtWidgets.QMainWindow):
     # Player Main Menu Buttons
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
+    self.ui.pushButton_15.clicked.connect(self.QuestionManager)
     #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
     # Game buttons
@@ -71,6 +78,13 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Leaderboard Buttons
     self.ui.pushButton_19.clicked.connect(self.PlayerMainMenu)
+
+    # Question Manager Buttons
+    self.ui.pushButton_20.clicked.connect(self.PlayerMainMenu)
+    self.ui.pushButton_21.clicked.connect(self.AddQuestionMenu)
+    
+    #Add a Question Buttons
+    self.ui.pushButton_22.clicked.connect(self.QuestionManager)
 
     self.ui.lcdNumber.display(30)
 
@@ -266,11 +280,26 @@ class Main_Window(QtWidgets.QMainWindow):
     self.game_instance.write_game(self.user_obj.username, self.start_time) #writes game log to DB
     self.ui.label_11.setText(str(self.game_instance.get_final_score()))
 
-  #def QuitBtn(self):
-    #sys.exit(app.exec_())
+  def QuestionManager(self):
+    self.ui.stackedWidget.setCurrentIndex(9)
 
-  # Displays user's score on score page
-  # def display_Score():
+  def AddQuestionMenu(self):
+    self.ui.stackedWidget.setCurrentIndex(10)
+    self.ui.pushButton_23.clicked.connect(self.scrape_from_url)
+
+  def scrape_from_url(self):
+    if is_Amazon_URL:
+      soup = open_url(self.ui.lineEdit_7.text())
+      self.ui.lineEdit_8.setText(str(scrape_title(soup)))
+      self.ui.lineEdit_9.setText(str(scrape_price(soup)))
+      self.ui.plainTextEdit.setPlainText(str(scrape_desc(soup)))
+      # scrape_title()
+      # scrape_desc()
+      # scrape_price()
+      # scrape_Image_URLs()
+
+    elif is_Walmart_URL:
+      return
 
 class Score_Window(QtWidgets.QDialog):
   def __init__(self,score,title,parent=None):
