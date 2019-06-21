@@ -7,10 +7,10 @@ A trivia game made in python for Software Engineering (CEN 4020)
   a. User stats/question manager/add question menus not done
 3. Manual Question Creation ('python question.py' to add questions atm)
 4. Database (Complete)
-5. Login/Register (Complete?)
-6. **Score System (CURRENT OBJECTIVE)**
+5. Login/Register (Complete)
+6. Score System (Complete)
 7. Game (80% complete, needs minor UI improvements and score system integration)
-8. **Records/Leaderboard/Log (CURRENT OBJECTIVE)**
+8. **Records/Leaderboard/Log (Records mostly done)**
 9. Product Scrapper (50% complete)
   a. Amazon scraping complete
   b. Walmart scraping not done
