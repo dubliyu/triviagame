@@ -1,8 +1,8 @@
-# =============================================================================
-# scraper.py
-# This module scraps a given URL for product information, i.e. name, price,
-# description, and images.
-# =============================================================================
+# =========================================================================== #
+# scraper.py                                                                  #
+# This module scraps a given URL for product information, i.e. name, price,   #
+# description, and images.                                                    #
+# =========================================================================== #
 #
 # NOTE: Only tested with Amazon.
 #
@@ -68,7 +68,7 @@ def is_Walmart_URL(url):
 
 # Returns soup (HTML parsed by BeautifulSoup) from a URL.
 def open_url(url):
-  # Headers for server identification
+  # Headers for server authentication
   headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
   req = urllib.request.Request(url, headers=headers)
   response = urllib.request.urlopen(req)

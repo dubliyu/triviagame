@@ -27,15 +27,16 @@ class Main_Window(QtWidgets.QMainWindow):
   timer_thread.start()
   time_left = 0
 
-
-
   def __init__(self):
     super(Main_Window, self).__init__()
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
+    self.setStyleSheet(open('style.css').read())
+    logo_pixmap = QtGui.QPixmap('logo.png')
+    self.ui.label_logo.setPixmap(logo_pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)) 
     self.ui.stackedWidget.setCurrentIndex(0)
   
-    # Start Page Buttons
+    # Start Page Elements
     self.ui.pushButton.clicked.connect(self.LoginPage)
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
 
@@ -54,9 +55,11 @@ class Main_Window(QtWidgets.QMainWindow):
 
     self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
 
-    # Player Main Menu Buttons
+    # Player Main Menu Elements
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
+    self.ui.pushButton_14.clicked.connect(self.LeaderboardPage)
+    self.ui.pushButton_15.clicked.connect(self.QuestionManagerPage)
     #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
     # Game buttons
@@ -171,8 +174,6 @@ class Main_Window(QtWidgets.QMainWindow):
         self.ui.lineEdit_6.setText('0')
         self.ui.lineEdit_6.setReadOnly(True)
         
-    
-
   def stop_timer(self): 
     self.timer_thread.running = False
     self.timer_thread.join()
@@ -247,6 +248,17 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.label_3.setFont(QtGui.QFont('SansSerif', 10)) #question number
     self.load_current_question()
     self.start_time = time.time()
+
+  def LeaderboardPage(self):
+    self.ui.stackedWidget.setCurrentIndex(9)
+
+  # Moves to question manager
+  def QuestionManagerPage(self):
+    self.ui.stackedWidget.setCurrentIndex(10)
+
+  # Moves to add question menu
+  def AddQuestionPage(self):
+    self.ui.stackedWidget.setCurrentIndex(11)
   
   def load_current_question(self):
     self.ui.label_3.setText(f'Q#: {self.game_instance.current_question}')
