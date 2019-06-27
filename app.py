@@ -8,7 +8,7 @@
 #         'pyuic5 window.ui -o window.py'.
 #
 
-from PyQt5 import QtWidgets, QtGui, QtCore, uic 
+from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread, currentThread
 from user import *
@@ -32,8 +32,10 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.setStyleSheet(open('style.css').read())
-    logo_pixmap = QtGui.QPixmap('logo.png')
-    self.ui.label_logo.setPixmap(logo_pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)) 
+
+    # Load Logo
+    #logo_pixmap = QtGui.QPixmap('logo.png')
+    #self.ui.label_logo.setPixmap(logo_pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)) 
     self.ui.stackedWidget.setCurrentIndex(0)
   
     # Start Page Elements
@@ -62,20 +64,22 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_15.clicked.connect(self.QuestionManagerPage)
     #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
-    # Game buttons
+    # Game Interface Elements
     self.ui.pushButton_9.clicked.connect(self.next_question_button)
     self.ui.lineEdit_6.returnPressed.connect(self.ui.pushButton_9.click)
+    self.ui.lcdNumber.display(30)
 
-    #Score Page buttons
+    # Score Page Elements
     self.ui.pushButton_17.clicked.connect(self.PlayerMainMenu)
 
     # Records Buttons
     self.ui.pushButton_18.clicked.connect(self.PlayerMainMenu)
 
-    # Leaderboard Buttons
+    # Leaderboard Elements
     self.ui.pushButton_19.clicked.connect(self.PlayerMainMenu)
 
-    self.ui.lcdNumber.display(30)
+    # Question Manager Elements
+    self.ui.open_image_button.clicked.connect(self.get_image)
 
 
   # Passover control flow login to main menu
@@ -277,6 +281,11 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.stackedWidget.setCurrentIndex(6)
     self.game_instance.write_game(self.user_obj.username, self.start_time) #writes game log to DB
     self.ui.label_11.setText(str(self.game_instance.get_final_score()))
+
+  # Opens image from file dialog
+  def get_image(self):
+    name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file')
+    file = open(name, 'r')
 
   #def QuitBtn(self):
     #sys.exit(app.exec_())
