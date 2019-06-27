@@ -317,13 +317,10 @@ class Main_Window(QtWidgets.QMainWindow):
   # Opens image from file dialog
   def add_image(self):
     file_dialog = QtWidgets.QFileDialog(self)
-    file_dialog.setNameFilters(['Images (*.png *.jpg)'])
-    file_dialog.selectNameFilter('Images (*.png *.jpg)')
-    #file_dialog.setFileMode(ExistingFiles)
-    path = file_dialog.getOpenFileName(self, 'Add Image')
-    print(path)
-    # file = open(name, 'r')
-
+    file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
+    path = file_dialog.getOpenFileName(self, 'Add Image', '', "Images (*.jpg, *.png)")
+    # Path is a tuple ("file path", "file filter"). 
+    # Access path name with subscript [0].
 
   #def QuitBtn(self):
     #sys.exit(app.exec_())

@@ -68,14 +68,18 @@ def is_Walmart_URL(url):
 
 # Returns soup (HTML parsed by BeautifulSoup) from a URL.
 def open_url(url):
+  MAX_RETRY = 3
   # Headers for server authentication
   headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
   req = urllib.request.Request(url, headers=headers)
   response = urllib.request.urlopen(req)
-  while response.getcode() != 200:
-    req = urllib.request.Request(url, headers=cls.headers)
-    response = urllib.request.urlopen(req)
-    time.sleep(0.5) 
+  if response.getcode() != 200:
+    for i in range (0, MAX_RETRY):
+      req = urllib.request.Request(url, headers=cls.headers)
+      response = urllib.request.urlopen(req)
+      if (response.getcode() == 200):
+        break
+      time.sleep(0.5) 
   soup = bs(response.read(), 'lxml')
   return soup
 
