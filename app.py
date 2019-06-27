@@ -36,7 +36,7 @@ class Main_Window(QtWidgets.QMainWindow):
     # Load Logo
     logo_pixmap = QtGui.QPixmap('logo.png')
     self.ui.label_logo.setPixmap(logo_pixmap.scaled(1000, 1000, QtCore.Qt.KeepAspectRatio)) 
-    self.ui.stackedWidget.setCurrentIndex(8)
+    self.ui.stackedWidget.setCurrentIndex(0)
   
     # Start Page Elements
     self.ui.pushButton.clicked.connect(self.LoginPage)
@@ -312,7 +312,7 @@ class Main_Window(QtWidgets.QMainWindow):
     file_dialog = QtWidgets.QFileDialog(self)
     file_dialog.setNameFilters(['Images (*.png *.jpg)'])
     file_dialog.selectNameFilter('Images (*.png *.jpg)')
-    file_dialog.setFileMode(ExistingFiles)
+    #file_dialog.setFileMode(ExistingFiles)
     path = file_dialog.getOpenFileName(self, 'Add Image')
     print(path)
     # file = open(name, 'r')
