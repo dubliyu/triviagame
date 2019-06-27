@@ -57,6 +57,9 @@ class Main_Window(QtWidgets.QMainWindow):
 
     self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
 
+    # Admin Main Memnu elements
+    self.ui.pushButton_6.clicked.connect(self.passoff_statistics)
+
     # Player Main Menu Elements
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
@@ -115,7 +118,6 @@ class Main_Window(QtWidgets.QMainWindow):
     else:
       self.PlayerMainMenu()
 
-
   # Passover control flow from register to login
   def passoff_register(page):
     # Get input data
@@ -143,7 +145,7 @@ class Main_Window(QtWidgets.QMainWindow):
       page.StartPage()
 
   # Passover logic to load the records
-  def passoff_records(page):
+  def passoff_records(page, e):
     # Retrieve user records
     records = page.user_obj.get_records()
 
@@ -155,7 +157,12 @@ class Main_Window(QtWidgets.QMainWindow):
       # Insert into the screen
       sumation = sumation + record[1]
       temp = QtWidgets.QHBoxLayout()
-      temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
+      if(record[1] == 0):
+        temp.addWidget(QtWidgets.QLabel("Played for 0 minutes", page))
+      else:
+        temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
+      
+      # continue
       temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
       temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
       temp.addStretch(1)
@@ -190,6 +197,64 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Move to the screen
     page.ui.stackedWidget.setCurrentIndex(8)
+
+  # Passover control flor from admin page to statistics
+  def passoff_statistics(page):
+    # Retirve user records
+    records = Player.get_statistics_records()
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    for record in records:
+      # Insert into the screen
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel(str(record[0]) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel("Average Score: " + str(record[1]) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel("Games Played: " + str(record[2]) + "\t" , page))
+
+      # Add see more btn
+      btn = QtWidgets.QPushButton("See More", page)
+      btn.clicked.connect(lambda: page.passoff_see_more(record))
+
+      temp.addWidget(btn)
+      temp.addStretch(1)
+      layout.addLayout(temp)
+    page.ui.scrollArea_6.setWidget(content)
+
+    # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(12)
+
+  def passoff_see_more(page, records):
+    # Retrieve user records
+    records = Player.get_records(records[0])
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    sumation = 0
+    for record in records:
+      # Insert into the screen
+      sumation = sumation + record[1]
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
+      temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
+      temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
+      temp.addStretch(1)
+      layout.addLayout(temp)
+    page.ui.scrollArea.setWidget(content)
+
+    # Set aveages and total
+    page.ui.label_17.setText("Games Played: " + str(len(records)))
+    if(len(records) == 0 or sumation == 0):
+      page.ui.label_18.setText("Average Score: 0")
+    else:
+      page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
+      
+
+    # Move to the screen
+    page.ui.pushButton_26.clicked.connect(page.passoff_statistics)
+    page.ui.stackedWidget.setCurrentIndex(7)
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
