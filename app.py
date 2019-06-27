@@ -115,7 +115,6 @@ class Main_Window(QtWidgets.QMainWindow):
     else:
       self.PlayerMainMenu()
 
-
   # Passover control flow from register to login
   def passoff_register(page):
     # Get input data
@@ -190,6 +189,29 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Move to the screen
     page.ui.stackedWidget.setCurrentIndex(8)
+
+  # Passover control flor from admin page to statistics
+  def passoff_statistics(page):
+    # Retirve user records
+    records = Player.get_statistics_records()
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    for record in records:
+      # Insert into the screen
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel(str(record[0]) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel("Average Score: "str(record[1]) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel("Games Played: "str(record[2]) + "\t" , page))
+      temp.addWidget(QtWidgets.QPushButton("See More", page))
+      temp.addStretch(1)
+      layout.addLayout(temp)
+    page.ui.scrollArea_5.setWidget(content)
+
+    # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(12)
+
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
