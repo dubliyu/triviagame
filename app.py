@@ -103,11 +103,18 @@ class Main_Window(QtWidgets.QMainWindow):
       # Create user obj
       page.user_obj = Player(username, password)
       if page.user_obj.is_logged_in:
-        page.PlayerMainMenu()
+        page.set_admin()
       else:
         # Bad login
         show_error(page, "Invalid Username/password combination.")
         page.ui.lineEdit_2.setText("")
+
+  def set_admin(self):
+    if self.user_obj.user_type == 1:
+      self.AdminMainMenu()
+    else:
+      self.PlayerMainMenu()
+
 
   # Passover control flow from register to login
   def passoff_register(page):
