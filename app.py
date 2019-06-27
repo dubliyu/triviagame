@@ -34,8 +34,8 @@ class Main_Window(QtWidgets.QMainWindow):
     self.setStyleSheet(open('style.css').read())
 
     # Load Logo
-    #logo_pixmap = QtGui.QPixmap('logo.png')
-    #self.ui.label_logo.setPixmap(logo_pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)) 
+    logo_pixmap = QtGui.QPixmap('logo.png')
+    self.ui.label_logo.setPixmap(logo_pixmap.scaled(1000, 1000, QtCore.Qt.KeepAspectRatio)) 
     self.ui.stackedWidget.setCurrentIndex(0)
   
     # Start Page Elements
@@ -79,8 +79,11 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_19.clicked.connect(self.PlayerMainMenu)
 
     # Question Manager Elements
-    self.ui.open_image_button.clicked.connect(self.get_image)
+    self.ui.pushButton_20.clicked.connect(self.PlayerMainMenu)
 
+    # Add Question Menu Elements
+    self.ui.pushButton_22.clicked.connect(self.PlayerMainMenu)
+    self.ui.open_image_button.clicked.connect(self.add_image)
 
   # Passover control flow login to main menu
   def passoff_login(page):
@@ -283,9 +286,15 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.label_11.setText(str(self.game_instance.get_final_score()))
 
   # Opens image from file dialog
-  def get_image(self):
-    name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file')
-    file = open(name, 'r')
+  def add_image(self):
+    file_dialog = QtWidgets.QFileDialog(self)
+    file_dialog.setNameFilters(['Images (*.png *.jpg)'])
+    file_dialog.selectNameFilter('Images (*.png *.jpg)')
+    #file_dialog.setFileMode(QFileDialog.ExistingFile)
+    path = file_dialog.getOpenFileName(self, 'Add Image')
+    print(path)
+    # file = open(name, 'r')
+
 
   #def QuitBtn(self):
     #sys.exit(app.exec_())
