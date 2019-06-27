@@ -78,6 +78,15 @@ class Player:
     connection.commit()
     connection.close()
 
+  @staticmethod
+  def get_top_five():
+    # Get records from db
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select * from games_played order by score sec limit 5;", (self.username,))
+    self.records = c.fetchall()
+    return self.records
+
   # Upgrades player to pro
   def upgrade_Pro(self):
     connection = sqlite3.connect('app.db')

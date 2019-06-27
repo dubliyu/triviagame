@@ -33,7 +33,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.setupUi(self)
     self.setStyleSheet(open('style.css').read())
     logo_pixmap = QtGui.QPixmap('logo.png')
-    self.ui.label_logo.setPixmap(logo_pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)) 
+    self.ui.label_logo.setPixmap(logo_pixmap.scaled(10000, 10000, QtCore.Qt.KeepAspectRatio)) 
     self.ui.stackedWidget.setCurrentIndex(0)
   
     # Start Page Elements
@@ -143,7 +143,7 @@ class Main_Window(QtWidgets.QMainWindow):
       temp = QtWidgets.QHBoxLayout()
       temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
       temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
-      temp.addWidget(QtWidgets.QLabel("Score" + str(record[2]), page))
+      temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
       temp.addStretch(1)
       layout.addLayout(temp)
     page.ui.scrollArea.setWidget(content)
@@ -154,6 +154,29 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Move to the screen
     page.ui.stackedWidget.setCurrentIndex(7)
+
+
+  def passoff_leader(page):
+    # Retrieve user records
+    records = Player.get_top_five()
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    count = 0
+    for record in records:
+      # Insert into the screen
+      sumation = sumation + record[1]
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel("# " + str(count) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel(str(record[1] + "\t"), page))
+      temp.addWidget(QtWidgets.QLabel(str(record[2]), page))
+      temp.addStretch(1)
+      layout.addLayout(temp)
+    page.ui.scrollArea_2.setWidget(content)
+
+    # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(9)
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
