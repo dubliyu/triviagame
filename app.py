@@ -60,7 +60,7 @@ class Main_Window(QtWidgets.QMainWindow):
     # Player Main Menu Elements
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
-    self.ui.pushButton_14.clicked.connect(self.LeaderboardPage)
+    self.ui.pushButton_14.clicked.connect(self.passoff_leader)
     self.ui.pushButton_15.clicked.connect(self.QuestionManagerPage)
     #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
@@ -150,7 +150,7 @@ class Main_Window(QtWidgets.QMainWindow):
       temp = QtWidgets.QHBoxLayout()
       temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
       temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
-      temp.addWidget(QtWidgets.QLabel("Score" + str(record[2]), page))
+      temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
       temp.addStretch(1)
       layout.addLayout(temp)
     page.ui.scrollArea.setWidget(content)
@@ -161,6 +161,28 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Move to the screen
     page.ui.stackedWidget.setCurrentIndex(7)
+
+
+  def passoff_leader(page):
+    # Retrieve user records
+    records = Player.get_top_five()
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    count = 1
+    for record in records:
+      # Insert into the screen
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel("# " + str(count) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel(str(record[1]) + "\t" + str(record[2]), page))
+      temp.addStretch(1)
+      layout.addLayout(temp)
+      count = count + 1
+    page.ui.scrollArea_2.setWidget(content)
+
+    # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(8)
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
