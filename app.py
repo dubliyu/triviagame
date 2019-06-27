@@ -170,7 +170,7 @@ class Main_Window(QtWidgets.QMainWindow):
       # Insert into the screen
       temp = QtWidgets.QHBoxLayout()
       temp.addWidget(QtWidgets.QLabel("# " + str(count) + "\t" , page))
-      temp.addWidget(QtWidgets.QLabel(str(record[1]) + "\t" + str(record[2]), page))
+      temp.addWidget(QtWidgets.QLabel(str(record[0]) + "\t" + str(record[2]), page))
       temp.addStretch(1)
       layout.addLayout(temp)
       count = count + 1
