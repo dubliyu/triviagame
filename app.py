@@ -341,7 +341,7 @@ class Main_Window(QtWidgets.QMainWindow):
     file_dialog = QtWidgets.QFileDialog(self)
     file_dialog.setNameFilters(['Images (*.png *.jpg)'])
     file_dialog.selectNameFilter('Images (*.png *.jpg)')
-    file_dialog.setFileMode(ExistingFiles)
+    #file_dialog.setFileMode(ExistingFiles)
     path = file_dialog.getOpenFileName(self, 'Add Image')
     print(path)
     # file = open(name, 'r')
