@@ -133,3 +133,12 @@ class Player:
     c.execute("select * from games_played where username=?;", (self.username,))
     self.records = c.fetchall()
     return self.records
+
+  @staticmethod
+  def get_records(username):
+    # Get records from db
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select * from games_played where username=?;", (username,))
+    records = c.fetchall()
+    return records
