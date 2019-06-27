@@ -78,6 +78,26 @@ class Player:
     connection.commit()
     connection.close()
 
+  @staticmethod
+  def get_top_five():
+    # Get records from db
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select * from games_played order by score desc limit 5;")
+    rec = c.fetchall()
+    connection.close()
+    return rec
+
+  @staticmethod
+  def get_statistics_records():
+    # Get records from db
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select A.username, AVG(coalesce(B.score, 0)) as avg_score, Count(coalesce(B.rowid, 0)) as games_played  from users A left join games_played B on A.username = B.username group by A.username;")
+    rec = c.fetchall()
+    connection.close()
+    return rec
+
   # Upgrades player to pro
   def upgrade_Pro(self):
     connection = sqlite3.connect('app.db')
@@ -113,3 +133,12 @@ class Player:
     c.execute("select * from games_played where username=?;", (self.username,))
     self.records = c.fetchall()
     return self.records
+
+  @staticmethod
+  def get_records(username):
+    # Get records from db
+    connection = sqlite3.connect('app.db')
+    c = connection.cursor()
+    c.execute("select * from games_played where username=?;", (username,))
+    records = c.fetchall()
+    return records

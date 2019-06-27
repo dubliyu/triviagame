@@ -1,0 +1,9 @@
+QMainWindow {
+  height: 100%;
+  width: 100%;
+}
+
+QPushButton {
+  border: 1px black;
+  background-color: white;
+}

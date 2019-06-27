@@ -8,7 +8,7 @@
 #         'pyuic5 window.ui -o window.py'.
 #
 
-from PyQt5 import QtWidgets, QtGui, QtCore, uic 
+from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread, currentThread
 from user import *
@@ -27,8 +27,6 @@ class Main_Window(QtWidgets.QMainWindow):
   timer_thread  = Thread()
   timer_thread.start()
   time_left = 0
- 
-
 
   def __init__(self):
     super(Main_Window, self).__init__()
@@ -39,9 +37,14 @@ class Main_Window(QtWidgets.QMainWindow):
 
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
+    self.setStyleSheet(open('style.css').read())
+
+    # Load Logo
+    logo_pixmap = QtGui.QPixmap('logo.png')
+    self.ui.label_logo.setPixmap(logo_pixmap.scaled(1000, 1000, QtCore.Qt.KeepAspectRatio)) 
     self.ui.stackedWidget.setCurrentIndex(0)
   
-    # Start Page Buttons
+    # Start Page Elements
     self.ui.pushButton.clicked.connect(self.LoginPage)
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
 
@@ -60,23 +63,28 @@ class Main_Window(QtWidgets.QMainWindow):
 
     self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
 
-    # Player Main Menu Buttons
+    # Admin Main Memnu elements
+    self.ui.pushButton_6.clicked.connect(self.passoff_statistics)
+
+    # Player Main Menu Elements
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
-    self.ui.pushButton_15.clicked.connect(self.QuestionManager)
+    self.ui.pushButton_14.clicked.connect(self.passoff_leader)
+    self.ui.pushButton_15.clicked.connect(self.QuestionManagerPage)
     #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
-    # Game buttons
+    # Game Interface Elements
     self.ui.pushButton_9.clicked.connect(self.next_question_button)
     self.ui.lineEdit_6.returnPressed.connect(self.ui.pushButton_9.click)
+    self.ui.lcdNumber.display(30)
 
-    #Score Page buttons
+    # Score Page Elements
     self.ui.pushButton_17.clicked.connect(self.PlayerMainMenu)
 
     # Records Buttons
     self.ui.pushButton_18.clicked.connect(self.PlayerMainMenu)
 
-    # Leaderboard Buttons
+    # Leaderboard Elements
     self.ui.pushButton_19.clicked.connect(self.PlayerMainMenu)
 
     # Question Manager Buttons
@@ -88,6 +96,9 @@ class Main_Window(QtWidgets.QMainWindow):
 
     self.ui.lcdNumber.display(30)
 
+    # Add Question Menu Elements
+    self.ui.pushButton_22.clicked.connect(self.PlayerMainMenu)
+    self.ui.open_image_button.clicked.connect(self.add_image)
 
   # Passover control flow login to main menu
   def passoff_login(page):
@@ -107,11 +118,17 @@ class Main_Window(QtWidgets.QMainWindow):
       # Create user obj
       page.user_obj = Player(username, password)
       if page.user_obj.is_logged_in:
-        page.PlayerMainMenu()
+        page.set_admin()
       else:
         # Bad login
         show_error(page, "Invalid Username/password combination.")
         page.ui.lineEdit_2.setText("")
+
+  def set_admin(self):
+    if self.user_obj.user_type == 1:
+      self.AdminMainMenu()
+    else:
+      self.PlayerMainMenu()
 
   # Passover control flow from register to login
   def passoff_register(page):
@@ -140,7 +157,7 @@ class Main_Window(QtWidgets.QMainWindow):
       page.StartPage()
 
   # Passover logic to load the records
-  def passoff_records(page):
+  def passoff_records(page, e):
     # Retrieve user records
     records = page.user_obj.get_records()
 
@@ -152,9 +169,14 @@ class Main_Window(QtWidgets.QMainWindow):
       # Insert into the screen
       sumation = sumation + record[1]
       temp = QtWidgets.QHBoxLayout()
-      temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
+      if(record[1] == 0):
+        temp.addWidget(QtWidgets.QLabel("Played for 0 minutes", page))
+      else:
+        temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
+      
+      # continue
       temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
-      temp.addWidget(QtWidgets.QLabel("Score" + str(record[2]), page))
+      temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
       temp.addStretch(1)
       layout.addLayout(temp)
     page.ui.scrollArea.setWidget(content)
@@ -164,6 +186,86 @@ class Main_Window(QtWidgets.QMainWindow):
     page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
 
     # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(7)
+
+
+  def passoff_leader(page):
+    # Retrieve user records
+    records = Player.get_top_five()
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    count = 1
+    for record in records:
+      # Insert into the screen
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel("# " + str(count) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel(str(record[0]) + "\t" + str(record[2]), page))
+      temp.addStretch(1)
+      layout.addLayout(temp)
+      count = count + 1
+    page.ui.scrollArea_2.setWidget(content)
+
+    # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(8)
+
+  # Passover control flor from admin page to statistics
+  def passoff_statistics(page):
+    # Retirve user records
+    records = Player.get_statistics_records()
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    for record in records:
+      # Insert into the screen
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel(str(record[0]) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel("Average Score: " + str(record[1]) + "\t" , page))
+      temp.addWidget(QtWidgets.QLabel("Games Played: " + str(record[2]) + "\t" , page))
+
+      # Add see more btn
+      btn = QtWidgets.QPushButton("See More", page)
+      btn.clicked.connect(lambda: page.passoff_see_more(record))
+
+      temp.addWidget(btn)
+      temp.addStretch(1)
+      layout.addLayout(temp)
+    page.ui.scrollArea_6.setWidget(content)
+
+    # Move to the screen
+    page.ui.stackedWidget.setCurrentIndex(12)
+
+  def passoff_see_more(page, records):
+    # Retrieve user records
+    records = Player.get_records(records[0])
+
+    # Populate the screen
+    content = QtWidgets.QWidget(page)
+    layout = QtWidgets.QVBoxLayout(content)
+    sumation = 0
+    for record in records:
+      # Insert into the screen
+      sumation = sumation + record[1]
+      temp = QtWidgets.QHBoxLayout()
+      temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
+      temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
+      temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
+      temp.addStretch(1)
+      layout.addLayout(temp)
+    page.ui.scrollArea.setWidget(content)
+
+    # Set aveages and total
+    page.ui.label_17.setText("Games Played: " + str(len(records)))
+    if(len(records) == 0 or sumation == 0):
+      page.ui.label_18.setText("Average Score: 0")
+    else:
+      page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
+      
+
+    # Move to the screen
+    page.ui.pushButton_26.clicked.connect(page.passoff_statistics)
     page.ui.stackedWidget.setCurrentIndex(7)
 
   def start_timer(self):
@@ -185,8 +287,6 @@ class Main_Window(QtWidgets.QMainWindow):
         self.ui.lineEdit_6.setText('0')
         self.ui.lineEdit_6.setReadOnly(True)
         
-    
-
   def stop_timer(self): 
     self.timer_thread.running = False
     self.timer_thread.join()
@@ -261,6 +361,17 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.label_3.setFont(QtGui.QFont('SansSerif', 10)) #question number
     self.load_current_question()
     self.start_time = time.time()
+
+  def LeaderboardPage(self):
+    self.ui.stackedWidget.setCurrentIndex(9)
+
+  # Moves to question manager
+  def QuestionManagerPage(self):
+    self.ui.stackedWidget.setCurrentIndex(10)
+
+  # Moves to add question menu
+  def AddQuestionPage(self):
+    self.ui.stackedWidget.setCurrentIndex(11)
   
   def load_current_question(self):
     self.ui.label_3.setText(f'Q#: {self.game_instance.current_question}')
@@ -304,6 +415,19 @@ class Main_Window(QtWidgets.QMainWindow):
 
     elif is_Walmart_URL:
       return
+  # Opens image from file dialog
+  def add_image(self):
+    file_dialog = QtWidgets.QFileDialog(self)
+    file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
+    path = file_dialog.getOpenFileName(self, 'Add Image', '', "Images (*.jpg, *.png)")
+    # Path is a tuple ("file path", "file filter"). 
+    # Access path name with subscript [0].
+
+  #def QuitBtn(self):
+    #sys.exit(app.exec_())
+
+  # Displays user's score on score page
+  # def display_Score():
 
 class Score_Window(QtWidgets.QDialog):
   def __init__(self,score,title,parent=None):

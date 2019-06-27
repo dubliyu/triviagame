@@ -3,7 +3,7 @@ A trivia game made in python for Software Engineering (CEN 4020)
 
 ## TODO
 1. Title Screen (needs logo)
-2. GUI (70% complete)
+2. GUI (80% complete)
   a. User stats/question manager/add question menus not done
 3. Manual Question Creation ('python question.py' to add questions atm)
 4. Database (Complete)
