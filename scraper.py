@@ -72,6 +72,10 @@ def open_url(url):
   headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
   req = urllib.request.Request(url, headers=headers)
   response = urllib.request.urlopen(req)
+  while response.getcode() != 200:
+    req = urllib.request.Request(url, headers=cls.headers)
+    response = urllib.request.urlopen(req)
+    time.sleep(0.5) 
   soup = bs(response.read(), 'lxml')
   return soup
 
@@ -113,12 +117,14 @@ def scrape_desc(soup):
   # Get description from meta tag in header.
   # Default description, if no other information can be scraped.
   default_desc = soup.find('meta', {'name': 'description'}).get('content')
+  
+  desc = soup.find('script', {'id': 'bookDesc_override_CSS'})
+  features = soup.find('div', {'id': 'feature-bullets'})
 
   # Get description from <noscript> tag.
   # Some products have their descriptions listed in iframes, which cannot be scraped
   # from the HTML. However, they can be scraped from the <noscript> tag, 
   # which acts as a fallback, if Javascript is disabled.
-  desc = soup.find('script', {'id': 'bookDesc_override_CSS'})
   if desc:
     desc = desc.next_sibling.next_sibling.text
     desc = remove_HTML_tags(desc).strip()
@@ -126,9 +132,9 @@ def scrape_desc(soup):
 
   # Get description from unordered list.
   # Scraped bulleted-list for text and concatenated to description.
-  elif not desc:
+  elif not desc and features:
     desc = ''
-    features = soup.find('div', {'id': 'feature-bullets'}).find_all('li', {'class': None})
+    features = features.find_all('li', {'class': None})
     for f in features:
       desc += f.text.strip() + '\n'
     return desc
@@ -160,7 +166,7 @@ def scrape_Image_URLs(soup):
       data = json.loads(img_json)
       img_num = len(data["imageGalleryData"])
       for x in range(0, img_num):
-        self.img_urls.append(data["imageGalleryData"][x]["mainUrl"])
+        img_urls.append(data["imageGalleryData"][x]["mainUrl"])
 
     elif 'colorImages' in img_script.text:
       # Format string to valid json format
@@ -232,6 +238,7 @@ def get_search_results(query):
 
 # url = input()
 # soup = open_url(url)
+# print(scrape_desc(soup))
 # title = scrape_title(soup)
 # price = scrape_price(soup)
 # img_urls = scrape_Image_URLs(soup)

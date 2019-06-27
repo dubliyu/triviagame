@@ -4,6 +4,5 @@ QMainWindow {
 }
 
 QPushButton {
-  /*background-color: white; 
-  border: 0px;*/
+  border: 1px black;
 }
