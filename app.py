@@ -32,15 +32,8 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.setStyleSheet(open('style.css').read())
-<<<<<<< HEAD
     logo_pixmap = QtGui.QPixmap('logo.png')
     self.ui.label_logo.setPixmap(logo_pixmap.scaled(10000, 10000, QtCore.Qt.KeepAspectRatio)) 
-=======
-
-    # Load Logo
-    #logo_pixmap = QtGui.QPixmap('logo.png')
-    #self.ui.label_logo.setPixmap(logo_pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)) 
->>>>>>> 6103fb6646e35fd227ee8ee41c633aecc9186a41
     self.ui.stackedWidget.setCurrentIndex(0)
   
     # Start Page Elements
@@ -65,7 +58,7 @@ class Main_Window(QtWidgets.QMainWindow):
     # Player Main Menu Elements
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
-    self.ui.pushButton_14.clicked.connect(self.LeaderboardPage)
+    self.ui.pushButton_14.clicked.connect(self.passoff_leader)
     self.ui.pushButton_15.clicked.connect(self.QuestionManagerPage)
     #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
 
@@ -172,20 +165,19 @@ class Main_Window(QtWidgets.QMainWindow):
     # Populate the screen
     content = QtWidgets.QWidget(page)
     layout = QtWidgets.QVBoxLayout(content)
-    count = 0
+    count = 1
     for record in records:
       # Insert into the screen
-      sumation = sumation + record[1]
       temp = QtWidgets.QHBoxLayout()
       temp.addWidget(QtWidgets.QLabel("# " + str(count) + "\t" , page))
-      temp.addWidget(QtWidgets.QLabel(str(record[1] + "\t"), page))
-      temp.addWidget(QtWidgets.QLabel(str(record[2]), page))
+      temp.addWidget(QtWidgets.QLabel(str(record[1]) + "\t" + str(record[2]), page))
       temp.addStretch(1)
       layout.addLayout(temp)
+      count = count + 1
     page.ui.scrollArea_2.setWidget(content)
 
     # Move to the screen
-    page.ui.stackedWidget.setCurrentIndex(9)
+    page.ui.stackedWidget.setCurrentIndex(8)
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
