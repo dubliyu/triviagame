@@ -378,6 +378,7 @@ class Main_Window(QtWidgets.QMainWindow):
 
   # Moves to question manager
   def QuestionManagerPage(self):
+    self.current_image_selection = Path('img\default.jpeg')
     self.ui.stackedWidget.setCurrentIndex(10)
 
   # Moves to add question menu
@@ -475,6 +476,7 @@ class Main_Window(QtWidgets.QMainWindow):
       self.grid_column = 0
       self.grid_row = 0
       self.clear_grid()
+      self.current_image_selection = Path('img\default.jpeg')
 
   def clear_grid(self):
     while self.ui.gridLayout_3.count():
