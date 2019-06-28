@@ -102,15 +102,21 @@ def scrape_price(soup):
   price1 = soup.find('span', {'class': 'a-size-medium a-color-price offer-price a-text-normal'})
   price2 = soup.find('span', {'id': 'price_inside_buybox'})
   price3 = soup.find('span', {'id': 'priceblock_ourprice'})
+  price4 = soup.find('span', {'class': 'price-large'})
 
   if price1:
     return float(price1.text[1:])
   elif price2:
     return float(price2.text.strip()[1:])
-  elif price3:
+  elif price3 and not price4:
+    return price3.text.strip()[1:]
+  elif price4:
     dollars = price3.find('span', {'class': 'price-large'})
-    cents = dollars.find_next_sibling('span', {'class': 'price-info-superscript'})
-    return float(dollars.text.strip() + '.' + cents.text.strip())
+    cents = price4.find_next_sibling('span', {'class': 'price-info-superscript'})
+    if cents:
+      return float(dollars.text.strip() + '.' + cents.text.strip())
+    else:
+      return float(dollars.text.strip() + '.99')
   else:
     return 0.0
 
@@ -242,9 +248,11 @@ def get_search_results(query):
 
 # url = input()
 # soup = open_url(url)
-# print(scrape_desc(soup))
 # title = scrape_title(soup)
 # price = scrape_price(soup)
+# print(title)
+# print(price)
+# print(scrape_desc(soup))
 # img_urls = scrape_Image_URLs(soup)
 # download_images(title, img_urls)
 # query = input()
