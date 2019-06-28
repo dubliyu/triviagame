@@ -31,8 +31,7 @@ class Question:
       self.qid = self.addQuestion(self.getName(),self.getPrice(),self.getDescription(),self.getImagePath()) #TODO this automatically pushes questions to DB when no img path exists, maybe change?
       self.setImagePath(self.generateImagePath())
       self.updateQuestion()
-      print(f'New image path is: {self.getImagePath()}, QID is {self.getID()}')
-  
+
   def setName(self,name):
     self.name = str(name)
 
@@ -54,8 +53,9 @@ class Question:
     return self.description
 
   #generates the path of an image of the product
-  def generateImagePath(self): 
-    return self.image_folder + '\\' +  f'{self.qid:>06}.jpeg' #6 character filename with padding
+  def generateImagePath(self):
+    new_path = self.image_folder + '\\' +  f'{self.qid:>06}.jpeg' #6 character filename with padding
+    return new_path #6 character filename with padding
     
   def setImagePath(self,img_path):
     self.img_path = str(img_path)
@@ -121,7 +121,7 @@ class Question:
 
   def updateQuestion(self): #pushes local (changed) values to database
     connection = sqlite3.connect('app.db')
-    connection.execute("update questions set (name, price, description, image)=(?, ?, ?, ?) where qid=?;",(self.getName(),self.getPrice(),self.getDescription(),self.getImagePath(),self.qid))
+    connection.execute("update questions set (name, price, description, image)=(?, ?, ?, ?) where qid=?;",(self.getName(), self.getPrice(), self.getDescription(), self.img_path, self.qid))
     connection.commit()
     connection.close()
 
