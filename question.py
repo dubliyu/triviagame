@@ -21,7 +21,7 @@ class Question:
   img_path =  default_path
   qid = -1
 
-  def __init__(self, name, price, description, img_path):
+  def __init__(self, name, price, description, img_path = False):
     self.setName(name)
     self.setPrice(price)
     self.setDescription(description)
@@ -31,6 +31,7 @@ class Question:
       self.qid = self.addQuestion(self.getName(),self.getPrice(),self.getDescription(),self.getImagePath()) #TODO this automatically pushes questions to DB when no img path exists, maybe change?
       self.setImagePath(self.generateImagePath())
       self.updateQuestion()
+      print(f'New image path is: {self.getImagePath()}, QID is {self.getID()}')
   
   def setName(self,name):
     self.name = str(name)
@@ -53,8 +54,8 @@ class Question:
     return self.description
 
   #generates the path of an image of the product
-  def generateImagePath(self): #TODO this is not currently used
-    return self.image_folder + '\\' +  f'{self.getID():>06}.jpeg' #6 character filename with padding
+  def generateImagePath(self): 
+    return self.image_folder + '\\' +  f'{self.qid:>06}.jpeg' #6 character filename with padding
     
   def setImagePath(self,img_path):
     self.img_path = str(img_path)
