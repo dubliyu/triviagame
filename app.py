@@ -13,6 +13,7 @@ from window import Ui_MainWindow
 from threading import Thread, currentThread
 from user import *
 from scraper import *
+from question import *
 import re
 import time
 import sys
@@ -24,9 +25,12 @@ class Main_Window(QtWidgets.QMainWindow):
   #Variables
   next_question_pushed = False
   game_instance = Game()
+  grid_row = 0
+  grid_column = 0
   timer_thread  = Thread()
   timer_thread.start()
   time_left = 0
+  current_image_selection = Path('img\default.jpeg')
 
   def __init__(self):
     super(Main_Window, self).__init__()
@@ -34,6 +38,8 @@ class Main_Window(QtWidgets.QMainWindow):
     screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
     centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
     frameGm.moveCenter(centerPoint)
+    grid_radio_buttons = QtWidgets.QButtonGroup()
+
 
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
@@ -89,10 +95,14 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Question Manager Buttons
     self.ui.pushButton_20.clicked.connect(self.PlayerMainMenu)
-    self.ui.pushButton_21.clicked.connect(self.AddQuestionMenu)
+    self.ui.pushButton_21.clicked.connect(self.QuestionManagerPage)
     
     #Add a Question Buttons
-    self.ui.pushButton_22.clicked.connect(self.QuestionManager)
+    self.ui.pushButton_22.clicked.connect(self.QuestionManagerPage)
+    self.ui.lineEdit_8.setMaxLength(80)
+    self.grid_radio_buttons = QtWidgets.QButtonGroup()
+    self.ui.pushButton_23.clicked.connect(self.scrape_from_url)
+    self.ui.pushButton_25.clicked.connect(self.add_question_from_manager)
 
     self.ui.lcdNumber.display(30)
 
@@ -100,6 +110,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_22.clicked.connect(self.PlayerMainMenu)
     self.ui.open_image_button.clicked.connect(self.add_image)
 
+    self.QuestionManagerPage()
   # Passover control flow login to main menu
   def passoff_login(page):
     # Get input data
@@ -372,7 +383,8 @@ class Main_Window(QtWidgets.QMainWindow):
   # Moves to add question menu
   def AddQuestionPage(self):
     self.ui.stackedWidget.setCurrentIndex(11)
-  
+
+
   def load_current_question(self):
     self.ui.label_3.setText(f'Q#: {self.game_instance.current_question}')
     self.ui.label_2.setText(self.game_instance.get_question().getName())
@@ -391,35 +403,88 @@ class Main_Window(QtWidgets.QMainWindow):
     self.game_instance.write_game(self.user_obj.username, self.start_time) #writes game log to DB
     self.ui.label_11.setText(str(self.game_instance.get_final_score()))
 
-  def QuestionManager(self):
-    self.ui.stackedWidget.setCurrentIndex(9)
-
-  def AddQuestionMenu(self):
-    self.ui.stackedWidget.setCurrentIndex(10)
-    self.ui.pushButton_23.clicked.connect(self.scrape_from_url)
-
   def scrape_from_url(self):
-    if is_Amazon_URL:
-      soup = open_url(self.ui.lineEdit_7.text())
-      self.ui.lineEdit_8.setText(str(scrape_title(soup)))
-      self.ui.lineEdit_9.setText(str(scrape_price(soup)))
-      self.ui.plainTextEdit.setPlainText(str(scrape_desc(soup)))
+    print ('Attempting scrape')
+    soup = open_url(self.ui.lineEdit_7.text())
+    title = scrape_title(soup)
+    self.grid_column = 0
+    self.grid_row = 0
+    self.ui.lineEdit_8.setText(title)
+    self.ui.lineEdit_9.setText(str(scrape_price(soup)))
+    self.ui.plainTextEdit.setPlainText(str(scrape_desc(soup)))
+    scraped_images = scrape_Image_URLs(soup)
+    print(scraped_images)
+    imagepaths = download_images(title[:8], scraped_images)
+    
+    for path in imagepaths:
+      self.add_image_to_grid(path)
 
-      images[] = 
-      def
-      
-      for image in images:
-        image_box = QtWidgets.QVBoxLayout().addItem(QtWidgets.QLabel
-      
-      # self.ui.gridLayout_3.addLayout
+  #adds an image to currently free grid space, using a Path to the image
+  def add_image_to_grid(self, path, checked=False):
+    image = QtGui.QPixmap(os.fspath(path))
+    image_box = QtWidgets.QVBoxLayout()
+    image_label = QtWidgets.QLabel()
+    image_label.setPixmap(image)
+    image_label.setScaledContents(True)
+    image_box.addWidget(image_label)
+    radio_button = QtWidgets.QRadioButton(os.fspath(path))
+    radio_button.toggled.connect(lambda: self.set_current_img(path))
+    self.grid_radio_buttons.addButton(radio_button) 
+    image_box.addWidget(radio_button, 0, QtCore.Qt.AlignCenter)
+    self.ui.gridLayout_3.addLayout(image_box, self.grid_row , self.grid_column)
 
-    elif is_Walmart_URL:
-      return
+    if checked:
+      radio_button.isChecked(True)
+
+    if self.grid_column is 0:
+      if self.grid_row == 0:
+        radio_button.setChecked(True)
+      self.grid_column = 1
+    else:
+      self.grid_column = 0
+      self.grid_row += 1
   # Opens image from file dialog
+  def add_question_from_manager(self):
+    name = str(self.ui.lineEdit_8.text())
+    user_price = str(self.ui.lineEdit_9.text())
+    description = str(self.ui.plainTextEdit.toPlainText())
+    price = 0
+    if re.match('^[+-]?[0-9]{1,3}(?:(,[0-9]{3})*|([0-9]{3})*)(?:\.[0-9]{2})?$', user_price ): #regex for price formatting
+      if not '.' in user_price:
+        price = int(re.sub('[^0-9]', '', user_price)) * 100 #if no cents indicated, make sure correct int format
+      else:
+        price = int(re.sub('[^0-9]', '', user_price)) #if cents used
+    else:
+      return False
+
+    path = self.current_image_selection
+    question = Question(name, price, description)
+    if question:
+      new_path = question.getImagePath()
+      shutil.copy(str(path), new_path)
+      for file in Path('temp').iterdir():
+        os.remove(file)
+
+      self.ui.lineEdit_8.setText('')
+      self.ui.lineEdit_9.setText('')
+      self.ui.plainTextEdit.setPlainText('')
+      self.ui.lineEdit_7.setText('')
+      self.grid_column = 0
+      self.grid_row = 0
+      self.clear_grid()
+
+  def clear_grid(self):
+    for i in reversed(range(self.ui.gridLayout_3.count())): 
+      self.ui.gridLayout_3.removeItem(self.ui.gridLayout_3.itemAt(i))
+
+  def set_current_img(self, path):
+    self.current_image_selection = path
+
   def add_image(self):
     file_dialog = QtWidgets.QFileDialog(self)
     file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-    path = file_dialog.getOpenFileName(self, 'Add Image', '', "Images (*.jpg, *.png)")
+    path = file_dialog.getOpenFileName(self, 'Add Image', '', "Images (*.jpg, *.png)")[0]
+    self.add_image_to_grid(path,True)
     # Path is a tuple ("file path", "file filter"). 
     # Access path name with subscript [0].
 

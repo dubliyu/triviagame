@@ -120,7 +120,9 @@ def scrape_desc(soup):
 
   # Get description from meta tag in header.
   # Default description, if no other information can be scraped.
-  default_desc = soup.find('meta', {'name': 'description'}).get('content')
+  default_desc = soup.find('meta', {'name': 'description'})
+  if default_desc:
+    default_desc = default_desc.get('content')
   
   desc = soup.find('script', {'id': 'bookDesc_override_CSS'})
   features = soup.find('div', {'id': 'feature-bullets'})
@@ -191,14 +193,16 @@ def scrape_Image_URLs(soup):
 def download_images(title, img_urls):
   img_num = 0 # Number for naming files
   create_Folder(_TEMP)
+  paths = []
 
   for img in img_urls:
     file_name = Path(_TEMP + title[:10] + '_' + str(img_num) + '.jpg')
+    paths.append(file_name)
     img_num += 1
     response = urllib.request.urlopen(img)
     file_name.write_bytes(response.read())
     time.sleep(1) # Delay between downloads
-
+  return paths
 # Returns a zip object containing the titles, URLs, and image URLs of results.
 def get_search_results(query):
   MAX_RESULTS = 5 
