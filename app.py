@@ -11,6 +11,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread, currentThread
+from PIL import Image
 from user import *
 from scraper import *
 from question import *
@@ -110,7 +111,6 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_22.clicked.connect(self.PlayerMainMenu)
     self.ui.open_image_button.clicked.connect(self.add_image)
 
-    self.QuestionManagerPage()
   # Passover control flow login to main menu
   def passoff_login(page):
     # Get input data
@@ -461,7 +461,10 @@ class Main_Window(QtWidgets.QMainWindow):
     question = Question(name, price, description)
     if question:
       new_path = question.img_path #not using getter because it returns default if the file is not currently there
-      shutil.copy(str(path), new_path)
+      im = Image.open(path)
+      im = im.convert('RGB')
+      im.save(new_path, 'JPEG') #converts to jpeg for compression
+      # shutil.copy(str(path), new_path)
       for file in Path('temp').iterdir():
         os.remove(file)
 
