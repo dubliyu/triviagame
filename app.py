@@ -11,6 +11,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread, currentThread
+from PIL import Image
 from user import *
 from scraper import *
 from question import *
@@ -49,7 +50,7 @@ class Main_Window(QtWidgets.QMainWindow):
     logo_pixmap = QtGui.QPixmap('logo.png')
     self.ui.label_logo.setPixmap(logo_pixmap.scaled(1000, 1000, QtCore.Qt.KeepAspectRatio)) 
     self.ui.stackedWidget.setCurrentIndex(0)
-  
+
     # Start Page Elements
     self.ui.pushButton.clicked.connect(self.LoginPage)
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
@@ -110,7 +111,6 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_22.clicked.connect(self.PlayerMainMenu)
     self.ui.open_image_button.clicked.connect(self.add_image)
 
-    self.QuestionManagerPage()
   # Passover control flow login to main menu
   def passoff_login(page):
     # Get input data
@@ -378,6 +378,7 @@ class Main_Window(QtWidgets.QMainWindow):
 
   # Moves to question manager
   def QuestionManagerPage(self):
+    self.current_image_selection = Path('img\default.jpeg')
     self.ui.stackedWidget.setCurrentIndex(10)
 
   # Moves to add question menu
@@ -404,7 +405,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.label_11.setText(str(self.game_instance.get_final_score()))
 
   def scrape_from_url(self):
-    print ('Attempting scrape')
+    # print ('Attempting scrape')
     soup = open_url(self.ui.lineEdit_7.text())
     title = scrape_title(soup)
     self.grid_column = 0
@@ -413,7 +414,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.lineEdit_9.setText(str(scrape_price(soup)))
     self.ui.plainTextEdit.setPlainText(str(scrape_desc(soup)))
     scraped_images = scrape_Image_URLs(soup)
-    print(scraped_images)
+    # print(scraped_images)
     imagepaths = download_images(title[:8], scraped_images)
     
     for path in imagepaths:
@@ -427,14 +428,14 @@ class Main_Window(QtWidgets.QMainWindow):
     image_label.setPixmap(image)
     image_label.setScaledContents(True)
     image_box.addWidget(image_label)
-    radio_button = QtWidgets.QRadioButton(os.fspath(path))
+    radio_button = QtWidgets.QRadioButton()
     radio_button.toggled.connect(lambda: self.set_current_img(path))
     self.grid_radio_buttons.addButton(radio_button) 
     image_box.addWidget(radio_button, 0, QtCore.Qt.AlignCenter)
     self.ui.gridLayout_3.addLayout(image_box, self.grid_row , self.grid_column)
 
     if checked:
-      radio_button.isChecked(True)
+      radio_button.setChecked(True)
 
     if self.grid_column is 0:
       if self.grid_row == 0:
@@ -460,8 +461,11 @@ class Main_Window(QtWidgets.QMainWindow):
     path = self.current_image_selection
     question = Question(name, price, description)
     if question:
-      new_path = question.getImagePath()
-      shutil.copy(str(path), new_path)
+      new_path = question.img_path #not using getter because it returns default if the file is not currently there
+      im = Image.open(path)
+      im = im.convert('RGB')
+      im.save(new_path, 'JPEG') #converts to jpeg for compression
+      # shutil.copy(str(path), new_path)
       for file in Path('temp').iterdir():
         os.remove(file)
 
@@ -472,10 +476,20 @@ class Main_Window(QtWidgets.QMainWindow):
       self.grid_column = 0
       self.grid_row = 0
       self.clear_grid()
+      self.current_image_selection = Path('img\default.jpeg')
 
   def clear_grid(self):
-    for i in reversed(range(self.ui.gridLayout_3.count())): 
-      self.ui.gridLayout_3.removeItem(self.ui.gridLayout_3.itemAt(i))
+    while self.ui.gridLayout_3.count():
+      parent = self.ui.gridLayout_3.takeAt(0)
+      while parent.count():
+        child = parent.takeAt(0)
+        if child.widget():
+          child.widget().deleteLater()
+
+
+    # for i in reversed(range(self.ui.gridLayout_3.count())):
+    #   self.ui.gridLayout_3.removeWidget(self.ui.gridLayout_3.itemAt(i).widget())
+    #   # self.ui.gridLayout_3.itemAt(i).layout().deleteLater()
 
   def set_current_img(self, path):
     self.current_image_selection = path
@@ -484,7 +498,7 @@ class Main_Window(QtWidgets.QMainWindow):
     file_dialog = QtWidgets.QFileDialog(self)
     file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
     path = file_dialog.getOpenFileName(self, 'Add Image', '', "Images (*.jpg, *.png)")[0]
-    self.add_image_to_grid(path,True)
+    self.add_image_to_grid(path, True)
     # Path is a tuple ("file path", "file filter"). 
     # Access path name with subscript [0].
 
