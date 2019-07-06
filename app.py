@@ -170,7 +170,7 @@ class Main_Window(QtWidgets.QMainWindow):
   # Passover logic to load the records
   def passoff_records(page, e):
     # Retrieve user records
-    records = page.user_obj.get_records()
+    records = page.user_obj.get_records(page.user_obj.username)
 
     # Populate the screen
     content = QtWidgets.QWidget(page)
