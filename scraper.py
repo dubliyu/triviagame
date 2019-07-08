@@ -226,6 +226,8 @@ def get_search_results(query):
   for i in range(0, MAX_RESULTS):
     title = results[i].find('h2')
     image = results[i].find('img')
+    if not title or not image:
+      break
     url = image.parent.parent
     if (not title or not image or not url):
       break

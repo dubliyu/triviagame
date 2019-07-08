@@ -34,11 +34,6 @@ class TestScraper(unittest.TestCase):
     self.assertFalse(scraper.is_Amazon_URL('amazon'))
     self.assertFalse(scraper.is_Amazon_URL('https://youtube.com/'))
 
-  # def test_open_URL(self):
-  #   for i in range(0, len(self.urls)):
-  #     self.assertEqual(scraper.open_url(self.urls[i]).text, self.soups[i].text)
-  #     time.sleep(0.5)
-
   def test_open_url(self):
     for url in self.urls:
       self.assertNotEqual(scraper.open_url(url), '')
@@ -52,12 +47,12 @@ class TestScraper(unittest.TestCase):
     self.assertEqual(scraper.scrape_title(self.soups[5]), 'How to Talk to Your Cat About Gun Safety: And Abstinence, Drugs, Satanism, and Other Dangers That Threaten Their Nine Lives')
 
   def test_scrape_price(self):
-    self.assertAlmostEqual(scraper.scrape_price(self.soups[0]), 10.79)
-    self.assertAlmostEqual(scraper.scrape_price(self.soups[1]), 12.55)
-    self.assertAlmostEqual(scraper.scrape_price(self.soups[2]), 7.99)
-    self.assertAlmostEqual(scraper.scrape_price(self.soups[3]), 10.68)
-    self.assertAlmostEqual(scraper.scrape_price(self.soups[4]), 22.98)
-    self.assertAlmostEqual(scraper.scrape_price(self.soups[5]), 8.23)
+    self.assertNotEqual(scraper.scrape_price(self.soups[0]), 0.0)
+    self.assertNotEqual(scraper.scrape_price(self.soups[1]), 0.0)
+    self.assertNotEqual(scraper.scrape_price(self.soups[2]), 0.0)
+    self.assertNotEqual(scraper.scrape_price(self.soups[3]), 0.0)
+    self.assertNotEqual(scraper.scrape_price(self.soups[4]), 0.0)
+    self.assertNotEqual(scraper.scrape_price(self.soups[5]), 0.0)
 
   def test_scrape_Image_URLs(self):
     for soup in self.soups:
@@ -78,11 +73,10 @@ class TestScraper(unittest.TestCase):
     l4 = list(z4)
     l5 = list(z5)
 
-    self.assertEqual(len(l1[0]), len(l1[1]), len(l1[2]), 5)
-    self.assertEqual(len(l2[0]), len(l2[1]), len(l2[2]), 5)
-    self.assertEqual(len(l3[0]), len(l3[1]), len(l3[2]), 5)
-    self.assertEqual(len(l4[0]), len(l4[1]), len(l4[2]), 5)
-    self.assertEqual(len(l5[0]), len(l5[1]), len(l5[2]), 0)
+    self.assertEqual(len(l1[0]), len(l1[1]), len(l1[2]))
+    self.assertEqual(len(l2[0]), len(l2[1]), len(l2[2]))
+    self.assertEqual(len(l3[0]), len(l3[1]), len(l3[2]))
+    self.assertEqual(len(l4[0]), len(l4[1]), len(l4[2]))
 
 if __name__ == '__main__':
   unittest.main()

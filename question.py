@@ -98,7 +98,6 @@ class Question:
     connection.commit()
     connection.close()
     
-
   @staticmethod
   def createQuestion(qid_input = 0):
     connection = sqlite3.connect('app.db')

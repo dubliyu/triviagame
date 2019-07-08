@@ -35,12 +35,11 @@ class Main_Window(QtWidgets.QMainWindow):
 
   def __init__(self):
     super(Main_Window, self).__init__()
-    frameGm = self.frameGeometry() #center the windows on the current screen 
+    frameGm = self.frameGeometry() # Center the windows on the current screen 
     screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
     centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
     frameGm.moveCenter(centerPoint)
     grid_radio_buttons = QtWidgets.QButtonGroup()
-
 
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
@@ -54,6 +53,7 @@ class Main_Window(QtWidgets.QMainWindow):
     # Start Page Elements
     self.ui.pushButton.clicked.connect(self.LoginPage)
     self.ui.pushButton_2.clicked.connect(self.RegisterPage)
+    self.ui.pushButton_28.clicked.connect(self.quitBtn)
 
     # Login Page Elements
     self.ui.pushButton_3.clicked.connect(self.passoff_login)
@@ -71,14 +71,16 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
 
     # Admin Main Memnu elements
+    self.ui.pushButton_5.clicked.connect(self.QuestionManagerPage)
     self.ui.pushButton_6.clicked.connect(self.passoff_statistics)
+    self.ui.pushButton_11.clicked.connect(self.quitBtn)
 
     # Player Main Menu Elements
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
     self.ui.pushButton_14.clicked.connect(self.passoff_leader)
     self.ui.pushButton_15.clicked.connect(self.QuestionManagerPage)
-    #self.ui.pushButton_16.clicked.connect(self.QuitBtn)
+    self.ui.pushButton_16.clicked.connect(self.quitBtn)
 
     # Game Interface Elements
     self.ui.pushButton_9.clicked.connect(self.next_question_button)
@@ -341,6 +343,13 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.lineEdit.text()
     self.ui.lineEdit_2.text()
 
+  def quitBtn(self):
+    self.close()
+
+  # ========================================================================= #
+  #                         Page Navigation Functions                         #
+  # ========================================================================= #
+
   # Moves to start page
   def StartPage(self):
     self.ui.stackedWidget.setCurrentIndex(0)
@@ -384,7 +393,6 @@ class Main_Window(QtWidgets.QMainWindow):
   # Moves to add question menu
   def AddQuestionPage(self):
     self.ui.stackedWidget.setCurrentIndex(11)
-
 
   def load_current_question(self):
     self.ui.label_3.setText(f'Q#: {self.game_instance.current_question}')
@@ -499,14 +507,6 @@ class Main_Window(QtWidgets.QMainWindow):
     file_dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
     path = file_dialog.getOpenFileName(self, 'Add Image', '', "Images (*.jpg, *.png)")[0]
     self.add_image_to_grid(path, True)
-    # Path is a tuple ("file path", "file filter"). 
-    # Access path name with subscript [0].
-
-  #def QuitBtn(self):
-    #sys.exit(app.exec_())
-
-  # Displays user's score on score page
-  # def display_Score():
 
 class Score_Window(QtWidgets.QDialog):
   def __init__(self,score,title,parent=None):
@@ -530,12 +530,14 @@ def show_error(page, error):
 # Loads images of questions for Q. Manager
 # def load_Images():
 
-app = QtWidgets.QApplication([])
-w = Main_Window()
-# score = Score_Window()
-#window.setGeometry(0, 0, 500, 300)
-w.setWindowTitle("Price Guessing Game")
+if __name__ == '__main__':
+  app = QtWidgets.QApplication([])
+  w = Main_Window()
+  # score = Score_Window()
+  #window.setGeometry(0, 0, 500, 300)
+  w.setWindowTitle("Price Guessing Game")
 
-w.show()
-sys.exit(app.exec_())
+  w.show()
+  sys.exit(app.exec_())
+
 
