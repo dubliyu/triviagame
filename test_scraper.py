@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup as bs
-import unittest
+import unittest, unittest.mock
 import scraper
 import urllib.request
 import lxml

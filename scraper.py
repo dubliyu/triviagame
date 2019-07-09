@@ -13,6 +13,7 @@ import shutil
 import string
 import lxml
 import urllib.request
+import urllib.error
 import json
 import re
 import os
@@ -20,8 +21,9 @@ import time
 import sys
 
 
-_AMAZON = 'https://amazon.com'
+_AMAZON = 'https://www.amazon.com'
 TIMEOUT_TIME = 10 # seconds
+MAX_RETRY = 3
 
 # Folder names
 _TEMP = 'temp/'
@@ -68,7 +70,6 @@ def is_Walmart_URL(url):
 
 # Returns soup (HTML parsed by BeautifulSoup) from a URL.
 def open_url(url):
-  MAX_RETRY = 3
   # Headers for server authentication
   headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
   req = urllib.request.Request(url, headers=headers)
@@ -84,7 +85,7 @@ def open_url(url):
   except TimeoutError:
     print('Timeout occurred for ' + url)
     pass
-  except (HTTPError, URLError):
+  except (urllib.error.HTTPError, urllib.error.URLError):
     print('Error: Data not retrieved for ' + url)
     pass
   except:
@@ -157,7 +158,7 @@ def scrape_desc(soup):
     desc = ''
     features = features.find_all('li', {'class': None})
     for f in features:
-      desc += f.text.strip() + '\n'
+      desc += f.text.strip() + '\n\n'
     return desc
 
   else:
@@ -216,15 +217,22 @@ def download_images(title, img_urls):
     img_num += 1
     try:
       response = urllib.request.urlopen(img, timeout=TIMEOUT_TIME)
+      if response.getcode() != 200:
+        for i in range (0, MAX_RETRY):
+          req = urllib.request.Request(url, headers=cls.headers)
+          response = urllib.request.urlopen(req, timeout=TIMEOUT_TIME)
+          if (response.getcode() == 200):
+            break
+          time.sleep(0.5) 
     except TimeoutError:
       print('Timeout occurred. Image could not be retrieved from ' + img)
       pass
-    except (URLError, HTTPError):
+    except (urllib.error.URLError, urllib.error.HTTPError):
       print('Data could not be retrieved from ' + img)
       pass
     except:
       print('Exception occurred for' + img)
-      pass
+      continue
     file_name.write_bytes(response.read())
     time.sleep(1) # Delay between downloads
   return paths

@@ -337,8 +337,8 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.label_2.setText(self.game_instance.get_question().getName())
     self.ui.textBrowser.setText(self.game_instance.get_question().getDescription())
     product_pixmap = QtGui.QPixmap(self.game_instance.get_question().getImagePath())
-    self.ui.label_product_image.setPixmap(product_pixmap)    
-    self.ui.label_product_image.setScaledContents(True)
+    self.ui.label_product_image.setPixmap(product_pixmap.scaled(self.ui.label_product_image.size(), QtCore.Qt.KeepAspectRatio))    
+    # self.ui.label_product_image.setScaledContents(True)
     # self.ui.label_product_image.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored) #TODO set up changes in QT designer, i couldnt get it to work -Robert
     self.ui.textBrowser.setMinimumWidth(400)
     self.start_timer()
@@ -352,7 +352,11 @@ class Main_Window(QtWidgets.QMainWindow):
 
   def scrape_from_url(self):
     # print ('Attempting scrape')
-    soup = open_url(self.ui.lineEdit_7.text())
+    url = self.ui.lineEdit_7.text()
+    if is_Amazon_URL(url) == False:
+      show_error(self, 'Invalid URL')
+      return
+    soup = open_url(url)
     title = scrape_title(soup)
     self.grid_column = 0
     self.grid_row = 0
@@ -371,8 +375,8 @@ class Main_Window(QtWidgets.QMainWindow):
     image = QtGui.QPixmap(os.fspath(path))
     image_box = QtWidgets.QVBoxLayout()
     image_label = QtWidgets.QLabel()
-    image_label.setPixmap(image)
-    image_label.setScaledContents(True)
+    image_label.setPixmap(image.scaled(image_label.size()/2, QtCore.Qt.KeepAspectRatio))
+    # image_label.setScaledContents(True)
     image_box.addWidget(image_label)
     radio_button = QtWidgets.QRadioButton()
     radio_button.toggled.connect(lambda: self.set_current_img(path))
