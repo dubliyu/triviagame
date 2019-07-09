@@ -19,9 +19,9 @@ import os
 import time
 import sys
 
-# Website URLs
+
 _AMAZON = 'https://amazon.com'
-_WALMART = 'https://walmart.com'
+TIMEOUT_TIME = 10 # seconds
 
 # Folder names
 _TEMP = 'temp/'
@@ -72,14 +72,24 @@ def open_url(url):
   # Headers for server authentication
   headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
   req = urllib.request.Request(url, headers=headers)
-  response = urllib.request.urlopen(req)
-  if response.getcode() != 200:
-    for i in range (0, MAX_RETRY):
-      req = urllib.request.Request(url, headers=cls.headers)
-      response = urllib.request.urlopen(req)
-      if (response.getcode() == 200):
-        break
-      time.sleep(0.5) 
+  try:
+    response = urllib.request.urlopen(req, timeout=TIMEOUT_TIME)
+    if response.getcode() != 200:
+      for i in range (0, MAX_RETRY):
+        req = urllib.request.Request(url, headers=cls.headers)
+        response = urllib.request.urlopen(req, timeout=TIMEOUT_TIME)
+        if (response.getcode() == 200):
+          break
+        time.sleep(0.5) 
+  except TimeoutError:
+    print('Timeout occurred for ' + url)
+    pass
+  except (HTTPError, URLError):
+    print('Error: Data not retrieved for ' + url)
+    pass
+  except:
+    print('Exception occurred for ' + url)
+    pass
   soup = bs(response.read(), 'lxml')
   return soup
 
@@ -204,10 +214,21 @@ def download_images(title, img_urls):
     file_name = Path(_TEMP + title[:10] + '_' + str(img_num) + '.jpg')
     paths.append(file_name)
     img_num += 1
-    response = urllib.request.urlopen(img)
+    try:
+      response = urllib.request.urlopen(img, timeout=TIMEOUT_TIME)
+    except TimeoutError:
+      print('Timeout occurred. Image could not be retrieved from ' + img)
+      pass
+    except (URLError, HTTPError):
+      print('Data could not be retrieved from ' + img)
+      pass
+    except:
+      print('Exception occurred for' + img)
+      pass
     file_name.write_bytes(response.read())
     time.sleep(1) # Delay between downloads
   return paths
+
 # Returns a zip object containing the titles, URLs, and image URLs of results.
 def get_search_results(query):
   MAX_RESULTS = 5 

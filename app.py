@@ -44,11 +44,17 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     self.setStyleSheet(open('style.css').read())
+    self.ui.stackedWidget.setCurrentIndex(0)
 
     # Load Logo
     logo_pixmap = QtGui.QPixmap('logo.png')
-    self.ui.label_logo.setPixmap(logo_pixmap.scaled(1000, 1000, QtCore.Qt.KeepAspectRatio)) 
-    self.ui.stackedWidget.setCurrentIndex(0)
+    self.ui.label_logo.setPixmap(logo_pixmap.scaled(1000, 900, QtCore.Qt.KeepAspectRatio))
+    self.ui.label_19.setPixmap(logo_pixmap.scaled(700, 500, QtCore.Qt.KeepAspectRatio))
+    self.ui.label.setPixmap(logo_pixmap.scaled(700, 500, QtCore.Qt.KeepAspectRatio)) 
+
+    # ======================================================================= #
+    #                                  Buttons                                #
+    # ======================================================================= #
 
     # Start Page Elements
     self.ui.pushButton.clicked.connect(self.LoginPage)
@@ -68,8 +74,6 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.lineEdit_4.setEchoMode(QtWidgets.QLineEdit.Password)
     self.ui.lineEdit_5.setEchoMode(QtWidgets.QLineEdit.Password)
 
-    self.ui.pushButton_10.clicked.connect(self.PlayerMainMenu)
-
     # Admin Main Memnu elements
     self.ui.pushButton_5.clicked.connect(self.QuestionManagerPage)
     self.ui.pushButton_6.clicked.connect(self.passoff_statistics)
@@ -83,6 +87,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_16.clicked.connect(self.quitBtn)
 
     # Game Interface Elements
+    self.ui.pushButton_10.clicked.connect(self.quitGame)
     self.ui.pushButton_9.clicked.connect(self.next_question_button)
     self.ui.lineEdit_6.returnPressed.connect(self.ui.pushButton_9.click)
     self.ui.lcdNumber.display(30)
@@ -91,23 +96,25 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_17.clicked.connect(self.PlayerMainMenu)
 
     # Records Buttons
-    self.ui.pushButton_18.clicked.connect(self.PlayerMainMenu)
+    self.ui.pushButton_18.clicked.connect(lambda: self.return_menu_records())
 
     # Leaderboard Elements
     self.ui.pushButton_19.clicked.connect(self.PlayerMainMenu)
 
     # Question Manager Buttons
     self.ui.pushButton_20.clicked.connect(self.PlayerMainMenu)
-    self.ui.pushButton_21.clicked.connect(self.QuestionManagerPage)
+    self.ui.pushButton_21.clicked.connect(self.AddQuestionPage)
     
-    #Add a Question Buttons
+    # Add a Question Menu Elements
     self.ui.pushButton_22.clicked.connect(self.QuestionManagerPage)
     self.ui.lineEdit_8.setMaxLength(80)
     self.grid_radio_buttons = QtWidgets.QButtonGroup()
     self.ui.pushButton_23.clicked.connect(self.scrape_from_url)
     self.ui.pushButton_25.clicked.connect(self.add_question_from_manager)
-
     self.ui.lcdNumber.display(30)
+
+    # User Statistics Elements
+    self.ui.pushButton_27.clicked.connect(self.AdminMainMenu)
 
     # Add Question Menu Elements
     self.ui.pushButton_22.clicked.connect(self.PlayerMainMenu)
@@ -140,6 +147,12 @@ class Main_Window(QtWidgets.QMainWindow):
   def set_admin(self):
     if self.user_obj.user_type == 1:
       self.AdminMainMenu()
+    else:
+      self.PlayerMainMenu()
+
+  def return_menu_records(self):
+    if self.user_obj.user_type == 1: # If admin
+      self.passoff_statistics()
     else:
       self.PlayerMainMenu()
 
@@ -219,11 +232,12 @@ class Main_Window(QtWidgets.QMainWindow):
       layout.addLayout(temp)
       count = count + 1
     page.ui.scrollArea_2.setWidget(content)
+    page.ui.scrollArea_2.setStyleSheet("background-color: #303030")
 
     # Move to the screen
     page.ui.stackedWidget.setCurrentIndex(8)
 
-  # Passover control flor from admin page to statistics
+  # Passover control flow from admin page to statistics
   def passoff_statistics(page):
     # Retirve user records
     records = Player.get_statistics_records()
@@ -275,7 +289,6 @@ class Main_Window(QtWidgets.QMainWindow):
       page.ui.label_18.setText("Average Score: 0")
     else:
       page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
-      
 
     # Move to the screen
     page.ui.pushButton_26.clicked.connect(page.passoff_statistics)
@@ -336,6 +349,7 @@ class Main_Window(QtWidgets.QMainWindow):
       return False
     current_score = self.game_instance.calculate_score(price_int, 30 - self.time_left)
     score_window = Score_Window(current_score.get_score(), current_score.get_label(), self)
+    score_window.setStyleSheet("background-color: #212121")
     score_window.show()
     return True
 
@@ -388,11 +402,19 @@ class Main_Window(QtWidgets.QMainWindow):
   # Moves to question manager
   def QuestionManagerPage(self):
     self.current_image_selection = Path('img\default.jpeg')
-    self.ui.stackedWidget.setCurrentIndex(10)
+    self.ui.stackedWidget.setCurrentIndex(9)
 
   # Moves to add question menu
   def AddQuestionPage(self):
-    self.ui.stackedWidget.setCurrentIndex(11)
+    self.ui.stackedWidget.setCurrentIndex(10)
+
+  # Exits current game and moves to Player Menu from Game interface
+  def quitGame(self):
+    quit_prompt = QtWidgets.QMessageBox.question(self, 'Quit Game', 'Current score will be discarded', QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+    if quit_prompt == QtWidgets.QMessageBox.Ok:
+      self.PlayerMainMenu()
+    if quit_prompt == QtWidgets.QMessageBox.Cancel:
+      pass
 
   def load_current_question(self):
     self.ui.label_3.setText(f'Q#: {self.game_instance.current_question}')
@@ -452,6 +474,7 @@ class Main_Window(QtWidgets.QMainWindow):
     else:
       self.grid_column = 0
       self.grid_row += 1
+
   # Opens image from file dialog
   def add_question_from_manager(self):
     name = str(self.ui.lineEdit_8.text())
@@ -485,6 +508,7 @@ class Main_Window(QtWidgets.QMainWindow):
       self.grid_row = 0
       self.clear_grid()
       self.current_image_selection = Path('img\default.jpeg')
+      self.QuestionManagerPage()
 
   def clear_grid(self):
     while self.ui.gridLayout_3.count():
@@ -493,7 +517,6 @@ class Main_Window(QtWidgets.QMainWindow):
         child = parent.takeAt(0)
         if child.widget():
           child.widget().deleteLater()
-
 
     # for i in reversed(range(self.ui.gridLayout_3.count())):
     #   self.ui.gridLayout_3.removeWidget(self.ui.gridLayout_3.itemAt(i).widget())
@@ -522,13 +545,14 @@ class Score_Window(QtWidgets.QDialog):
     frameGm.moveCenter(centerPoint)
     self.move(frameGm.topLeft())
     
+# Shows dialog prompt QMessageBox to user with passed error.
 def show_error(page, error):
   # TODO - Add an error container to each page? At least login
   # error_login_label
-  page.ui.error_register_label.setText(error)
-
-# Loads images of questions for Q. Manager
-# def load_Images():
+  error_msg = error
+  error_prompt = QtWidgets.QMessageBox.question(page, 'Error', error_msg, QtWidgets.QMessageBox.Ok)
+  if error_prompt == QtWidgets.QMessageBox.Ok:
+    pass
 
 if __name__ == '__main__':
   app = QtWidgets.QApplication([])

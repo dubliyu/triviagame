@@ -38,3 +38,7 @@ QTableView {
 QScrollArea {
   background-color: #303030;
 }
+
+QMessageBox {
+  background-color: #212121;
+}
