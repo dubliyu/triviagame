@@ -12,14 +12,31 @@ from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread, currentThread
 from PIL import Image
-from user import *
 from scraper import *
 from question import *
 import re
 import time
 import sys
-import user
 from game import Game
+
+# Get Objects from subdirs
+sys.path.insert(0, './objects')
+from user import *
+
+# Get shared pages from subdirs
+sys.path.insert(0, './pages')
+import login as login_page
+import register as register_page
+
+# Get player pages from subdirs
+sys.path.insert(0, './pages/player')
+import player_records
+import player_lead
+
+# Get admin pages from subdirs
+sys.path.insert(0, './pages/admin')
+import admin_stats
+
 
 # One Main Window, Multiple QStackedWidgets
 class Main_Window(QtWidgets.QMainWindow):
@@ -76,13 +93,13 @@ class Main_Window(QtWidgets.QMainWindow):
 
     # Admin Main Memnu elements
     self.ui.pushButton_5.clicked.connect(self.QuestionManagerPage)
-    self.ui.pushButton_6.clicked.connect(self.passoff_statistics)
+    self.ui.pushButton_6.clicked.connect(self.passoff_stats)
     self.ui.pushButton_11.clicked.connect(self.quitBtn)
 
     # Player Main Menu Elements
     self.ui.pushButton_12.clicked.connect(self.GamePage)
     self.ui.pushButton_13.clicked.connect(self.passoff_records)
-    self.ui.pushButton_14.clicked.connect(self.passoff_leader)
+    self.ui.pushButton_14.clicked.connect(self.passoff_leaderboards)
     self.ui.pushButton_15.clicked.connect(self.QuestionManagerPage)
     self.ui.pushButton_16.clicked.connect(self.quitBtn)
 
@@ -122,147 +139,31 @@ class Main_Window(QtWidgets.QMainWindow):
 
   # Passover control flow login to main menu
   def passoff_login(page):
-    # Get input data
-    username = page.ui.lineEdit.text()
-    password = page.ui.lineEdit_2.text()
+    error = login_page.handle_login(page)
+    if error != None: show_error(page, error)
 
-    # Validate
-    if Player.length_check(username) or Player.length_check(password):
-      show_error(page, "Credentials have invalid length,")
-      page.ui.lineEdit_2.setText("")
-    elif Player.alpha_check(username) or Player.alpha_check(password):
-      show_error(page, "Only alpha numeric usernames/passwords allowed.")
-      page.ui.lineEdit_2.setText("")
-      page.ui.lineEdit.setText("")
-    else:
-      # Create user obj
-      page.user_obj = Player(username, password)
-      if page.user_obj.is_logged_in:
-        page.set_admin()
-      else:
-        # Bad login
-        show_error(page, "Invalid Username/password combination.")
-        page.ui.lineEdit_2.setText("")
+  # Passover control flow register to login
+  def passoff_register(page):
+    error = register_page.handle_register(page)
+    if error != None: show_error(page, error)
 
-  def set_admin(self):
-    if self.user_obj.user_type == 1:
-      self.AdminMainMenu()
-    else:
-      self.PlayerMainMenu()
+  # Passover control from player menu to records
+  def passoff_records(page):
+    player_records.goto_records(page)
+
+  # Passover control from player menu to records
+  def passoff_leaderboards(page):
+    player_lead.goto_leaderboards(page)
+
+  # Passover control from admin menu to statistics
+  def passoff_stats(page):
+    admin_stats.goto_stats(page)
 
   def return_menu_records(self):
     if self.user_obj.user_type == 1: # If admin
-      self.passoff_statistics()
+      admin_stats.goto_stats(self)
     else:
       self.PlayerMainMenu()
-
-  # Passover control flow from register to login
-  def passoff_register(page):
-    # Get input data
-    username = page.ui.lineEdit_3.text()
-    password = page.ui.lineEdit_4.text()
-    re_password = page.ui.lineEdit_5.text()
-
-    # Validate
-    if Player.length_check(username) or Player.length_check(password) or Player.length_check(re_password):
-      show_error(page, "Credentials have invalid length.")
-      page.ui.lineEdit_4.setText("")
-      page.ui.lineEdit_5.setText("")
-    elif Player.alpha_check(username) or Player.alpha_check(password):
-      show_error(page, "Only alpha numeric usernames/passwords allowed.")
-      page.ui.lineEdit_4.setText("")
-      page.ui.lineEdit_5.setText("")
-    elif Player.check_Username(username):
-      show_error(page, "Username is taken.")
-      page.ui.lineEdit_3.setText("")
-      page.ui.lineEdit_4.setText("")
-      page.ui.lineEdit_5.setText("")
-    else:
-      # insert into user
-      Player.add_User(username, password)
-      page.StartPage()
-
-  # Passover logic to load the records
-  def passoff_records(page, e):
-    # Retrieve user records
-    records = page.user_obj.get_records(page.user_obj.username)
-
-    # Populate the screen
-    content = QtWidgets.QWidget(page)
-    layout = QtWidgets.QVBoxLayout(content)
-    sumation = 0
-    for record in records:
-      # Insert into the screen
-      sumation = sumation + record[1]
-      temp = QtWidgets.QHBoxLayout()
-      if(record[1] == 0):
-        temp.addWidget(QtWidgets.QLabel("Played for 0 minutes", page))
-      else:
-        temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
-      
-      # continue
-      temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
-      temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
-      temp.addStretch(1)
-      layout.addLayout(temp)
-    page.ui.scrollArea.setWidget(content)
-
-    # Set aveages and total
-    page.ui.label_17.setText("Games Played: " + str(len(records)))
-    page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
-
-    # Move to the screen
-    page.ui.stackedWidget.setCurrentIndex(7)
-
-
-  def passoff_leader(page):
-    # Retrieve user records
-    records = Player.get_top_five()
-
-    # Populate the screen
-    content = QtWidgets.QWidget(page)
-    layout = QtWidgets.QVBoxLayout(content)
-    count = 1
-    for record in records:
-      # Insert into the screen
-      temp = QtWidgets.QHBoxLayout()
-      temp.addWidget(QtWidgets.QLabel("# " + str(count) + "\t" , page))
-      temp.addWidget(QtWidgets.QLabel(str(record[0]) + "\t" + str(record[2]), page))
-      temp.addStretch(1)
-      layout.addLayout(temp)
-      count = count + 1
-    page.ui.scrollArea_2.setWidget(content)
-    page.ui.scrollArea_2.setStyleSheet("background-color: #303030")
-
-    # Move to the screen
-    page.ui.stackedWidget.setCurrentIndex(8)
-
-  # Passover control flow from admin page to statistics
-  def passoff_statistics(page):
-    # Retirve user records
-    records = Player.get_statistics_records()
-
-    # Populate the screen
-    content = QtWidgets.QWidget(page)
-    layout = QtWidgets.QVBoxLayout(content)
-    for record in records:
-      # Insert into the screen
-      temp = QtWidgets.QHBoxLayout()
-      temp.addWidget(QtWidgets.QLabel(str(record[0]) + "\t" , page))
-      temp.addWidget(QtWidgets.QLabel("Average Score: " + str(record[1]) + "\t" , page))
-      temp.addWidget(QtWidgets.QLabel("Games Played: " + str(record[2]) + "\t" , page))
-
-      # Add see more btn
-      btn = QtWidgets.QPushButton("See More", page)
-      btn.clicked.connect(lambda: page.passoff_see_more(record))
-
-      temp.addWidget(btn)
-      temp.addStretch(1)
-      layout.addLayout(temp)
-    page.ui.scrollArea_6.setWidget(content)
-
-    # Move to the screen
-    page.ui.stackedWidget.setCurrentIndex(12)
 
   def passoff_see_more(page, records):
     # Retrieve user records
@@ -291,7 +192,7 @@ class Main_Window(QtWidgets.QMainWindow):
       page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
 
     # Move to the screen
-    page.ui.pushButton_26.clicked.connect(page.passoff_statistics)
+    page.ui.pushButton_26.clicked.connect(admin_stats.goto_stats)
     page.ui.stackedWidget.setCurrentIndex(7)
 
   def start_timer(self):
@@ -547,8 +448,6 @@ class Score_Window(QtWidgets.QDialog):
     
 # Shows dialog prompt QMessageBox to user with passed error.
 def show_error(page, error):
-  # TODO - Add an error container to each page? At least login
-  # error_login_label
   error_msg = error
   error_prompt = QtWidgets.QMessageBox.question(page, 'Error', error_msg, QtWidgets.QMessageBox.Ok)
   if error_prompt == QtWidgets.QMessageBox.Ok:
