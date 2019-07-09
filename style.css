@@ -1,6 +1,4 @@
 QMainWindow {
-  /* height: 100%;
-  width: 100%; */
   background-color: #212121;
 }
 
@@ -31,14 +29,26 @@ QLineEdit {
   border-color: #303030;
 }
 
+QPlainTextEdit {
+  font-size: 15px;
+  border-color: #303030;
+}
+
 QTableView {
   background-color: #303030;
 }
 
 QScrollArea {
   background-color: #303030;
+  border-color: #303030;
 }
 
 QMessageBox {
   background-color: #212121;
+}
+
+QTextBrowser {
+  background-color: #303030;
+  color: white;
+  font-size: 15px;
 }

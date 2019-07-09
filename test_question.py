@@ -6,8 +6,7 @@ from pathlib import Path
 import time
 import random
 
-
-class TestScraper(unittest.TestCase):
+class TestQuestion(unittest.TestCase):
 
   # @classmethod
   # def setUpClass(cls):
@@ -47,15 +46,31 @@ class TestScraper(unittest.TestCase):
     self.q1.description = 'this wasn\'t a reference probably'
     self.assertEqual(self.q1.getDescription(), 'this wasn\'t a reference probably')
 
+  def test_loadQuestion(self):
+    qid = self.q1.qid
+    name = self.q1.name
+    price = self.q1.price
+    img_path = self.q1.img_path
+
+    self.q1.loadQuestion()
+
+    # Check that question data matches
+    self.assertEqual(self.q1.qid, qid)
+    self.assertEqual(self.q1.name, name)
+    self.assertEqual(self.q1.price, price)
+    self.assertEqual(self.q1.img_path, img_path)
+
+  def test_getID(self):
+    self.assertEqual(self.q1.getID(), self.q1.qid)
+
   def test_totalQuestions(self):
     numQ = Question.totalQuestions()
     self.assertNotEqual(numQ, 0)
 
   def test_get_question_ids(self):
     self.assertNotEqual(Question.get_question_ids(), [])
+    self.assertGreater(len(Question.get_question_ids()), 0)
     # print(Question.get_question_ids())
-    
-
 
 if __name__ == '__main__':
   unittest.main()

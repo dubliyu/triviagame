@@ -135,7 +135,6 @@ class Question:
       qid_list.append(qid_selection[x][0])
     return qid_list
 
-
 if __name__ == '__main__': #Manually inserting a question (dev tool)
   add_question_input = input('Add a question? (Y/N):')
   while add_question_input == 'Y' or add_question_input == 'y':

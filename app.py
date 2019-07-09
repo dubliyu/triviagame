@@ -96,29 +96,26 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.pushButton_17.clicked.connect(self.PlayerMainMenu)
 
     # Records Buttons
-    self.ui.pushButton_18.clicked.connect(lambda: self.return_menu_records())
+    self.ui.pushButton_18.clicked.connect(self.return_menu_records)
 
     # Leaderboard Elements
     self.ui.pushButton_19.clicked.connect(self.PlayerMainMenu)
 
     # Question Manager Buttons
-    self.ui.pushButton_20.clicked.connect(self.PlayerMainMenu)
+    self.ui.pushButton_20.clicked.connect(self.return_menu_question)
     self.ui.pushButton_21.clicked.connect(self.AddQuestionPage)
     
     # Add a Question Menu Elements
-    self.ui.pushButton_22.clicked.connect(self.QuestionManagerPage)
+    self.ui.pushButton_22.clicked.connect(self.cancelQuestion)
     self.ui.lineEdit_8.setMaxLength(80)
     self.grid_radio_buttons = QtWidgets.QButtonGroup()
     self.ui.pushButton_23.clicked.connect(self.scrape_from_url)
     self.ui.pushButton_25.clicked.connect(self.add_question_from_manager)
+    self.ui.open_image_button.clicked.connect(self.add_image)
     self.ui.lcdNumber.display(30)
 
     # User Statistics Elements
     self.ui.pushButton_27.clicked.connect(self.AdminMainMenu)
-
-    # Add Question Menu Elements
-    self.ui.pushButton_22.clicked.connect(self.PlayerMainMenu)
-    self.ui.open_image_button.clicked.connect(self.add_image)
 
   # Passover control flow login to main menu
   def passoff_login(page):
@@ -153,6 +150,12 @@ class Main_Window(QtWidgets.QMainWindow):
   def return_menu_records(self):
     if self.user_obj.user_type == 1: # If admin
       self.passoff_statistics()
+    else:
+      self.PlayerMainMenu()
+
+  def return_menu_question(self):
+    if self.user_obj.user_type == 1:
+      self.AdminMainMenu()
     else:
       self.PlayerMainMenu()
 
@@ -517,6 +520,19 @@ class Main_Window(QtWidgets.QMainWindow):
         child = parent.takeAt(0)
         if child.widget():
           child.widget().deleteLater()
+
+  # Empties Add Question menu fields and moves to Question Manager page
+  def cancelQuestion(self):
+    back_prompt = QtWidgets.QMessageBox.question(self, 'Go Back', 'Current data will be discarded', QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+    if back_prompt == QtWidgets.QMessageBox.Ok:
+      self.QuestionManagerPage()
+      self.ui.lineEdit_7.setText('')
+      self.ui.lineEdit_8.setText('')
+      self.ui.lineEdit_9.setText('')
+      self.ui.plainTextEdit.setPlainText('')
+      self.clear_grid()
+    if back_prompt == QtWidgets.QMessageBox.Cancel:
+      pass
 
     # for i in reversed(range(self.ui.gridLayout_3.count())):
     #   self.ui.gridLayout_3.removeWidget(self.ui.gridLayout_3.itemAt(i).widget())
