@@ -28,7 +28,6 @@ class Game:
     self.score_list.clear()
     for x in range(self.MAX_QUESTIONS):#donot exceed max questions
       if len(qid_list) == 0: #quit if not enough questions to populate
-        print('Ran out of questions to add!')
         break
       else:
         qid = random.choice(qid_list)
