@@ -208,7 +208,8 @@ class Main_Window(QtWidgets.QMainWindow):
         self.ui.pushButton_9.setText('NEXT')
         self.stop_timer()
       else:
-        QtWidgets.QMessageBox.about(self, 'Error','Invalid price formatting.')
+        #QtWidgets.QMessageBox.about(self, 'Error','Invalid price formatting.')
+        show_error(self, 'Invalid price formatting.')
     else:
       self.ui.lineEdit_6.setReadOnly(False)
       self.ui.lineEdit_6.setText('')
@@ -231,9 +232,15 @@ class Main_Window(QtWidgets.QMainWindow):
     else:
       return False
     current_score = self.game_instance.calculate_score(price_int, 30 - self.time_left)
-    score_window = Score_Window(current_score.get_score(), current_score.get_label(), self)
-    score_window.setStyleSheet("background-color: #212121")
-    score_window.show()
+
+    msg = 'Your guess is ' + current_score.get_label() + '!\n\n Your score is ' + str(current_score.get_score()) + ' points!'
+    score_prompt = QtWidgets.QMessageBox.information(self, 'Score', msg, QtWidgets.QMessageBox.Ok)
+    if score_prompt == QtWidgets.QMessageBox.Ok:
+      pass
+
+    # score_window = Score_Window(current_score.get_score(), current_score.get_label(), self)
+    # score_window.setStyleSheet("background-color: #212121")
+    # score_window.show()
     return True
 
   def loginBtn(self):
@@ -437,7 +444,6 @@ class Main_Window(QtWidgets.QMainWindow):
     pal.setColor(QtGui.QPalette.Background, QtCore.Qt.darkGray)
     self.ui.scrollArea_3.setPalette(pal) #TODO this isnt working
 
-
   def _add_question_to_manager(self, question):
     buttons = self.question_manager_widget.add_question_widget(question)
     buttons[0].clicked.connect(lambda: self._open_question_edit(question))
@@ -462,8 +468,6 @@ class Main_Window(QtWidgets.QMainWindow):
     self.question_manager_widget.deleteLater()
     self.populate_question_manager()
 
-
-
   # Empties Add Question menu fields and moves to Question Manager page
   def cancelQuestion(self):
     back_prompt = QtWidgets.QMessageBox.question(self, 'Go Back', 'Current data will be discarded', QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
@@ -484,7 +488,6 @@ class Main_Window(QtWidgets.QMainWindow):
       self._delete_question_from_manager(question)
     if back_prompt == QtWidgets.QMessageBox.Cancel:
       pass
-
 
   def set_current_img(self, path):
     self.current_image_selection = path
@@ -512,7 +515,7 @@ class Score_Window(QtWidgets.QDialog):
 # Shows dialog prompt QMessageBox to user with passed error.
 def show_error(page, error):
   error_msg = error
-  error_prompt = QtWidgets.QMessageBox.question(page, 'Error', error_msg, QtWidgets.QMessageBox.Ok)
+  error_prompt = QtWidgets.QMessageBox.warning(page, 'Error', error_msg, QtWidgets.QMessageBox.Ok)
   if error_prompt == QtWidgets.QMessageBox.Ok:
     pass
 

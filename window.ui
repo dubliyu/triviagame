@@ -36,7 +36,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>9</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -816,6 +816,12 @@
           </item>
           <item>
            <widget class="QLabel" name="label_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="styleSheet">
              <string notr="true">font: 18pt &quot;MS Shell Dlg 2&quot;;</string>
             </property>
@@ -830,6 +836,9 @@
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1281,8 +1290,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>61</width>
-               <height>16</height>
+               <width>973</width>
+               <height>597</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -1375,8 +1384,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>61</width>
-               <height>16</height>
+               <width>973</width>
+               <height>625</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -1776,8 +1785,8 @@ font-size: 15px;</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>16</width>
-                   <height>16</height>
+                   <width>456</width>
+                   <height>437</height>
                   </rect>
                  </property>
                  <property name="styleSheet">

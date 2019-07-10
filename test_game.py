@@ -10,13 +10,16 @@ class TestGame(unittest.TestCase):
     cls.Score1 = Score('name', 2222, time)
 
   def test_load_questions(self):
+    # Test that questions are being loaded into question_list
     self.game.load_questions()
     self.assertGreater(len(self.game.question_list), 0)
 
   def test_get_question(self):
+    # Assert question is not NoneType
     self.assertEqual(self.game.get_question(), None)
 
   def test_next_question(self):
+    # Assert that index in question_list is incremented by 1
     start = self.game.current_question
     self.game.next_question()
     next = self.game.current_question
