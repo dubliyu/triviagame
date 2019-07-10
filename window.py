@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'c:\Users\rober\Documents\0_Programming\triviagame\window.ui'
+# Form implementation generated from reading ui file 'window.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -453,7 +453,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 973, 597))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 61, 16))
         self.scrollAreaWidgetContents_2.setStyleSheet("background-color: #303030;")
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
@@ -487,7 +487,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 973, 625))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 61, 16))
         self.scrollAreaWidgetContents_3.setStyleSheet("background-color: #303030;")
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
@@ -534,17 +534,15 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 973, 550))
         self.scrollAreaWidgetContents.setStyleSheet("background-color: #303030;")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.horizontalLayoutWidget = QtWidgets.QWidget(self.scrollAreaWidgetContents)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 971, 541))
-        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
-        self.horizontalLayout_20 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout_20.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
+        self.layoutWidget = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 971, 551))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.horizontalLayout_20 = QtWidgets.QHBoxLayout(self.layoutWidget)
         self.horizontalLayout_20.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_20.setSpacing(0)
         self.horizontalLayout_20.setObjectName("horizontalLayout_20")
         self.scrollArea_3.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_10.addWidget(self.scrollArea_3)
-        self.gridLayout_15.addLayout(self.verticalLayout_10, 0, 0, 1, 1)
+        self.gridLayout_15.addLayout(self.verticalLayout_10, 0, 1, 1, 1)
         self.stackedWidget.addWidget(self.page_10)
         self.page_11 = QtWidgets.QWidget()
         self.page_11.setObjectName("page_11")
@@ -633,7 +631,7 @@ class Ui_MainWindow(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollArea_4.setObjectName("scrollArea_4")
         self.scrollAreaWidgetContents_5 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_5.setGeometry(QtCore.QRect(0, 0, 456, 437))
+        self.scrollAreaWidgetContents_5.setGeometry(QtCore.QRect(0, 0, 16, 16))
         self.scrollAreaWidgetContents_5.setStyleSheet("background-color: #303030;")
         self.scrollAreaWidgetContents_5.setObjectName("scrollAreaWidgetContents_5")
         self.gridLayoutWidget_2 = QtWidgets.QWidget(self.scrollAreaWidgetContents_5)

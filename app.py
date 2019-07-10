@@ -66,6 +66,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.setupUi(self)
     self.setStyleSheet(open('style.css').read())
     self.ui.stackedWidget.setCurrentIndex(0)
+    self.showMaximized()
 
     # Load Logo
     logo_pixmap = QtGui.QPixmap('logo.png')
@@ -291,8 +292,6 @@ class Main_Window(QtWidgets.QMainWindow):
   def AddQuestionPage(self):
     self.ui.stackedWidget.setCurrentIndex(10)
 
-
-
   # Exits current game and moves to Player Menu from Game interface
   def quitGame(self):
     quit_prompt = QtWidgets.QMessageBox.question(self, 'Quit Game', 'Current score will be discarded', QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
@@ -364,7 +363,6 @@ class Main_Window(QtWidgets.QMainWindow):
 
   # Opens image from file dialog
   def add_question_from_manager(self):
-    print('pressed button')
     name = str(self.ui.lineEdit_8.text())
     user_price = str(self.ui.lineEdit_9.text())
     description = str(self.ui.plainTextEdit.toPlainText())

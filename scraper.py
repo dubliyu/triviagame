@@ -120,7 +120,7 @@ def scrape_price(soup):
   elif price2:
     return float(price2.text.strip()[1:])
   elif price3 and not price4:
-    return price3.text.strip()[1:]
+    return float(price3.text.strip()[1:])
   elif price4:
     cents = price4.find_next_sibling('span', {'class': 'price-info-superscript'})
     if cents:
