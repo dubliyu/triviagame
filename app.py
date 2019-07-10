@@ -14,6 +14,7 @@ from threading import Thread, currentThread
 from PIL import Image
 from scraper import *
 from question import *
+from widgets import *
 import re
 import time
 import sys
@@ -319,6 +320,7 @@ class Main_Window(QtWidgets.QMainWindow):
   def QuestionManagerPage(self):
     self.current_image_selection = Path('img\default.jpeg')
     self.ui.stackedWidget.setCurrentIndex(9)
+    self.populate_question_manager()
 
   # Moves to add question menu
   def AddQuestionPage(self):
@@ -338,8 +340,6 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.textBrowser.setText(self.game_instance.get_question().getDescription())
     product_pixmap = QtGui.QPixmap(self.game_instance.get_question().getImagePath())
     self.ui.label_product_image.setPixmap(product_pixmap.scaled(self.ui.label_product_image.size(), QtCore.Qt.KeepAspectRatio))    
-    # self.ui.label_product_image.setScaledContents(True)
-    # self.ui.label_product_image.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored) #TODO set up changes in QT designer, i couldnt get it to work -Robert
     self.ui.textBrowser.setMinimumWidth(400)
     self.start_timer()
 
@@ -438,6 +438,14 @@ class Main_Window(QtWidgets.QMainWindow):
         if child.widget():
           child.widget().deleteLater()
 
+  def populate_question_manager(self):
+    questions_widget = QuestionManagerWidget()
+    self.ui.verticalLayout_10.addWidget(questions_widget) # this works but its not the right layout
+    # self.ui.horizontalLayout_20.addWidget(questions_widget) #  TODO this is what is mean to work
+
+
+    
+
   # Empties Add Question menu fields and moves to Question Manager page
   def cancelQuestion(self):
     back_prompt = QtWidgets.QMessageBox.question(self, 'Go Back', 'Current data will be discarded', QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
@@ -451,9 +459,6 @@ class Main_Window(QtWidgets.QMainWindow):
     if back_prompt == QtWidgets.QMessageBox.Cancel:
       pass
 
-    # for i in reversed(range(self.ui.gridLayout_3.count())):
-    #   self.ui.gridLayout_3.removeWidget(self.ui.gridLayout_3.itemAt(i).widget())
-    #   # self.ui.gridLayout_3.itemAt(i).layout().deleteLater()
 
   def set_current_img(self, path):
     self.current_image_selection = path
@@ -495,5 +500,6 @@ if __name__ == '__main__':
   w.show()
   sys.exit(app.exec_())
   delete_Folder(temp)
+
 
 
