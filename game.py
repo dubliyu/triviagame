@@ -53,7 +53,6 @@ class Game:
       return False
     else:
       self.current_question = self.current_question + 1
-      print(f'Current question is now {self.current_question} out of {self.number_of_questions}')
       return True
 
   def calculate_score(self, user_guess, time):
