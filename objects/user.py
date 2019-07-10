@@ -93,7 +93,7 @@ class Player:
     # Get records from db
     connection = sqlite3.connect('app.db')
     c = connection.cursor()
-    c.execute("select A.username, AVG(coalesce(B.score, 0)) as avg_score, Count(coalesce(B.rowid, 0)) as games_played  from users A left join games_played B on A.username = B.username group by A.username;")
+    c.execute("select A.username, AVG(coalesce(B.score, 0)) as avg_score, Count(coalesce(B.rowid, 0)) as games_played  from users A left join games_played B on A.username = B.username where B.rowid is not null group by A.username;")
     rec = c.fetchall()
     connection.close()
     return rec

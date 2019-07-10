@@ -45,7 +45,7 @@ def goto_records(page):
     average_score = 0
     if len(records) > 0: average_score = sumation / len(records)
     page.ui.label_17.setText("Games Played: " + str(len(records)))
-    page.ui.label_18.setText("Average Score: " + str(average_score))
+    page.ui.label_18.setText("Average Score: " + '{:.2f}'.format(average_score))
 
     # Move to the screen
     page.ui.stackedWidget.setCurrentIndex(7)
