@@ -22,12 +22,10 @@ class QuestionManagerWidget(QListWidget):           # - QWidget
         self.setWrapping(True)
         self.setResizeMode(self.Adjust)
 
-
         self._allow_height_change = False
         self._child_widgets = []
         self.qid_list = Question.get_question_ids()
         self.add_question_widgets()
-
 
     def add_question_widgets(self):
         for i in self.qid_list:

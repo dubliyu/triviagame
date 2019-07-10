@@ -63,6 +63,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.setupUi(self)
     self.setStyleSheet(open('style.css').read())
     self.ui.stackedWidget.setCurrentIndex(0)
+    self.showMaximized()
 
     # Load Logo
     logo_pixmap = QtGui.QPixmap('logo.png')
@@ -440,11 +441,12 @@ class Main_Window(QtWidgets.QMainWindow):
 
   def populate_question_manager(self):
     questions_widget = QuestionManagerWidget()
-    self.ui.verticalLayout_10.addWidget(questions_widget) # this works but its not the right layout
+    #self.ui.verticalLayout_10.addWidget(questions_widget) # this works but its not the right layout
+    #self.ui.horizontalLayout_20.addWidget(questions_widget)
+    self.ui.scrollArea_3.setWidgetResizable(True)
+    self.ui.scrollArea_3.setWidget(questions_widget)
+    #questions_widget.setLayout(self.ui.horizontalLayout_20)
     # self.ui.horizontalLayout_20.addWidget(questions_widget) #  TODO this is what is mean to work
-
-
-    
 
   # Empties Add Question menu fields and moves to Question Manager page
   def cancelQuestion(self):

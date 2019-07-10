@@ -1391,7 +1391,7 @@
       </widget>
       <widget class="QWidget" name="page_10">
        <layout class="QGridLayout" name="gridLayout_15">
-        <item row="0" column="0">
+        <item row="0" column="1">
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -1508,21 +1508,13 @@
              <widget class="QWidget" name="layoutWidget">
               <property name="geometry">
                <rect>
-                <x>-470</x>
-                <y>90</y>
-                <width>1561</width>
-                <height>621</height>
+                <x>0</x>
+                <y>0</y>
+                <width>971</width>
+                <height>551</height>
                </rect>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_20">
-               <item>
-                <widget class="QPushButton" name="pushButton_24">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <layout class="QHBoxLayout" name="horizontalLayout_20"/>
              </widget>
             </widget>
            </widget>
@@ -1784,8 +1776,8 @@ font-size: 15px;</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>456</width>
-                   <height>437</height>
+                   <width>16</width>
+                   <height>16</height>
                   </rect>
                  </property>
                  <property name="styleSheet">
