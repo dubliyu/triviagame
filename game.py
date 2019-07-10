@@ -13,7 +13,7 @@ from question import Question
 # from app import mywindow
 
 class Game:
-  MAX_QUESTIONS = 10
+  MAX_QUESTIONS = 11
   current_question = 1
   number_of_questions = 0
   question_list = []
@@ -28,7 +28,6 @@ class Game:
     self.score_list.clear()
     for x in range(self.MAX_QUESTIONS):#donot exceed max questions
       if len(qid_list) == 0: #quit if not enough questions to populate
-        print('Ran out of questions to add!')
         break
       else:
         qid = random.choice(qid_list)
@@ -53,7 +52,6 @@ class Game:
       return False
     else:
       self.current_question = self.current_question + 1
-      print(f'Current question is now {self.current_question} out of {self.number_of_questions}')
       return True
 
   def calculate_score(self, user_guess, time):

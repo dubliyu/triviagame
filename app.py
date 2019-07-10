@@ -394,13 +394,12 @@ class Main_Window(QtWidgets.QMainWindow):
           os.remove(file)
     if self.edit_question:
       self.edit_question.setName(name)
-      print(f'New name: {self.edit_question.getName()}')
       self.edit_question.setPrice(user_price)
       self.edit_question.setDescription(user_price)
       new_path = self.edit_question.generateImagePath()
       self.edit_question.updateQuestion()
+      self.edit_question.removeQuestion(self.edit_question.getID())
     else:
-      print('whoops its saving a new question')
       question = Question(name, price, description)
       new_path = question.img_path
       self.question_manager_widget.add_question_widget(question)

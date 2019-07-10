@@ -32,7 +32,6 @@ class Question:
     else:
       self.qid = self.addQuestion(self.getName(),self.getPrice(),self.getDescription(),self.getImagePath()) #TODO this automatically pushes questions to DB when no img path exists, maybe change?
       self.setImagePath(self.generateImagePath())
-      print(self.qid)
       self.updateQuestion()
 
   def setName(self,name):
