@@ -135,20 +135,9 @@ class Main_Window(QtWidgets.QMainWindow):
     # User Statistics Elements
     self.ui.pushButton_27.clicked.connect(self.AdminMainMenu)
 
-  # Passover control flow login to main menu
-  def passoff_login(page):
-    error = login_page.handle_login(page)
-    if error != None: show_error(page, error)
-
-  def set_admin(self):
-    if self.user_obj.user_type == 1:
-      self.AdminMainMenu()
-    else:
-      self.PlayerMainMenu()
-
   def return_menu_records(self):
     if self.user_obj.user_type == 1: # If admin
-      self.passoff_statistics()
+      self.passoff_stats()
     else:
       self.PlayerMainMenu()
 
@@ -157,6 +146,11 @@ class Main_Window(QtWidgets.QMainWindow):
       self.AdminMainMenu()
     else:
       self.PlayerMainMenu()
+
+  # Passover control flow login to main menu
+  def passoff_login(page):
+    error = login_page.handle_login(page)
+    if error != None: show_error(page, error)
 
   # Passover control flow from register to login
   def passoff_register(page):
@@ -175,41 +169,9 @@ class Main_Window(QtWidgets.QMainWindow):
   def passoff_stats(page):
     admin_stats.goto_stats(page)
 
-  def return_menu_records(self):
-    if self.user_obj.user_type == 1: # If admin
-      admin_stats.goto_stats(self)
-    else:
-      self.PlayerMainMenu()
-
+  # Passover control from admin statistics to players individual statistics
   def passoff_see_more(page, records):
-    # Retrieve user records
-    records = Player.get_records(records[0])
-
-    # Populate the screen
-    content = QtWidgets.QWidget(page)
-    layout = QtWidgets.QVBoxLayout(content)
-    sumation = 0
-    for record in records:
-      # Insert into the screen
-      sumation = sumation + record[1]
-      temp = QtWidgets.QHBoxLayout()
-      temp.addWidget(QtWidgets.QLabel("Played for " + str('{:.2f}'.format(record[1] / 60)) + " minutes", page))
-      temp.addWidget(QtWidgets.QLabel("At " + str(record[3]), page))
-      temp.addWidget(QtWidgets.QLabel("Score " + str(record[2]), page))
-      temp.addStretch(1)
-      layout.addLayout(temp)
-    page.ui.scrollArea.setWidget(content)
-
-    # Set aveages and total
-    page.ui.label_17.setText("Games Played: " + str(len(records)))
-    if(len(records) == 0 or sumation == 0):
-      page.ui.label_18.setText("Average Score: 0")
-    else:
-      page.ui.label_18.setText("Average Score: " + str(sumation / len(records)))
-
-    # Move to the screen
-    page.ui.pushButton_26.clicked.connect(admin_stats.goto_stats)
-    page.ui.stackedWidget.setCurrentIndex(7)
+    admin_stats.goto_see_more(page, records)
 
   def start_timer(self):
     self.timer_thread = Thread(target = self._countdown)
@@ -416,9 +378,9 @@ class Main_Window(QtWidgets.QMainWindow):
       im = Image.open(path)
       im = im.convert('RGB')
       im.save(new_path, 'JPEG') #converts to jpeg for compression
-      # shutil.copy(str(path), new_path)
-      for file in Path('temp').iterdir():
-        os.remove(file)
+      if os.path.isdir("./temp"):
+        for file in Path('temp').iterdir():
+          os.remove(file)
 
       self.ui.lineEdit_8.setText('')
       self.ui.lineEdit_9.setText('')
@@ -442,6 +404,7 @@ class Main_Window(QtWidgets.QMainWindow):
     questions_widget = QuestionManagerWidget()
     self.ui.verticalLayout_10.addWidget(questions_widget) # this works but its not the right layout
     # self.ui.horizontalLayout_20.addWidget(questions_widget) #  TODO this is what is mean to work
+    self.ui.scrollArea_3.setWidget(questions_widget)
 
 
     
