@@ -92,7 +92,7 @@ def open_url(url):
     print('Exception occurred for ' + url)
     pass
   soup = bs(response.read(), 'lxml')
-  return soup
+  return soup if (response.getcode() == 200) else ''
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = #
 # NOTE: To use scrape functions, a parsed HTML file, or soup, must be passed. #
