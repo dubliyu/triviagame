@@ -21,15 +21,18 @@ class Question:
   img_path =  default_path
   qid = -1
 
-  def __init__(self, name, price, description, img_path = False):
+  def __init__(self, name, price, description, img_path = False, qid_input = -1):
     self.setName(name)
     self.setPrice(price)
     self.setDescription(description)
     if img_path:
       self.setImagePath(img_path)
+      if qid_input > -1:
+        self.qid = qid_input
     else:
       self.qid = self.addQuestion(self.getName(),self.getPrice(),self.getDescription(),self.getImagePath()) #TODO this automatically pushes questions to DB when no img path exists, maybe change?
       self.setImagePath(self.generateImagePath())
+      print(self.qid)
       self.updateQuestion()
 
   def setName(self,name):
@@ -89,6 +92,7 @@ class Question:
     connection.commit()
     qid = connection.execute("select last_insert_rowid()").fetchone()[0]
     connection.close()
+    # print(qid)
     return qid
 
   @staticmethod
@@ -102,10 +106,10 @@ class Question:
   def createQuestion(qid_input = 0):
     connection = sqlite3.connect('app.db')
     c = connection.cursor()
-    c.execute("select * from questions where qid=?;", (qid_input,))
+    c.execute("select rowid, * from questions where qid=?;", (qid_input,))
     question = c.fetchone()
     connection.close()
-    return Question(question[1], question[2], question[3], question[4])
+    return Question(question[2], question[3], question[4], question[5], question[1])
 
   def loadQuestion(self): #pulls question from database and replaces local values
     connection = sqlite3.connect('app.db')
