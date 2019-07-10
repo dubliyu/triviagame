@@ -14,7 +14,7 @@ class QuestionManagerWidget(QListWidget):           # - QWidget
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.HEIGHT = 400
+        self.HEIGHT = 500
         self.WIDTH = 300
 
         self.setFrameShape(self.NoFrame)
@@ -26,81 +26,75 @@ class QuestionManagerWidget(QListWidget):           # - QWidget
         self._allow_height_change = False
         self._child_widgets = []
         self.qid_list = Question.get_question_ids()
-        self.add_question_widgets()
 
 
-    def add_question_widgets(self):
-        for i in self.qid_list:
-            #load question
-            question = Question.createQuestion(i)
+    def add_question_widget(self, question):
+        #load question
 
-            #set up list item
-            item = QListWidgetItem()
 
-            # Create widget
-            widget = QWidget()
-            product_name = QLabel(question.getName())
-            pixmap = QPixmap(question.getImagePath())
+        #set up list item
+        item = QListWidgetItem()
 
-            product_image = QLabel()
-            product_image.setFixedSize(self.WIDTH/2, self.HEIGHT/2)
-            product_image.setPixmap(pixmap.scaled(product_image.size(), QtCore.Qt.KeepAspectRatio))
-            product_image.setAlignment(QtCore.Qt.AlignCenter)
+        # Create widgets
+        widget = QWidget()
+        widget.setAutoFillBackground(True)
+        product_name = QLabel()
+        product_name.setText(question.getName())
 
-            #buttons
-            edit_button = QPushButton("Edit")
-            edit_button.clicked.connect(lambda: self.open_question(qid))
-            delete_button = QPushButton("Delete")
-            qid = question.getID()
-            delete_button.clicked.connect(lambda: self.delete_question(qid))
+        pal = QPalette()
+        pal.setColor(QPalette.Background, QtCore.Qt.darkGray)
+        widget.setPalette(pal)
 
-            #add widgets to layout
-            widgetLayout = QVBoxLayout()
-            widgetLayout.addWidget(product_image)
-            widgetLayout.addWidget(product_name)
-            widgetLayout.addWidget(edit_button)
-            widgetLayout.addWidget(delete_button)
-            widgetLayout.addStretch()
-            widgetLayout.setAlignment(QtCore.Qt.AlignCenter)
 
-            #add widget to QListView
-            widget.setLayout(widgetLayout)
-            widget.setFixedSize(self.WIDTH, self.HEIGHT)
-            widget.setParent(self)
-            self._child_widgets.append(widget)
+        #image
+        pixmap = QPixmap(question.getImagePath())
+        product_image = QLabel()
+        product_image.setFixedSize(self.WIDTH, self.HEIGHT/1.5)
+        product_image.setPixmap(pixmap.scaled(product_image.size(), QtCore.Qt.KeepAspectRatio))
+        product_image.setAlignment(QtCore.Qt.AlignCenter)
+        product_image.setAutoFillBackground(False)
+
+
+        #buttons
+        edit_button = QPushButton("Edit")
+        delete_button = QPushButton("Delete")
+        buttons = [edit_button, delete_button]
+
+        #add widgets to layout
+        widgetLayout = QVBoxLayout()
+        widgetLayout.addWidget(product_image)
+        widgetLayout.addWidget(product_name)
+        widgetLayout.addWidget(edit_button)
+        widgetLayout.addWidget(delete_button)
+        # widgetLayout.addStretch()
+        # widgetLayout.setAlignment(QtCore.Qt.AlignCenter)
+
+        #add widget to QListView
+        widget.setLayout(widgetLayout)
+        widget.setFixedSize(self.WIDTH, self.HEIGHT)
+        widget.setParent(self)
+        self._child_widgets.append(widget)
+
+
 
         self._move_panels()
+        return buttons
 
     def _move_panels(self):
         num_per_row = max(int((self.width()) / self.WIDTH), 1)
 
-        for i in range(len(self.qid_list)):
+        for i in range(len(self._child_widgets)):
             y = int(i / num_per_row)
             x = i % num_per_row
             self._child_widgets[i].move(x * self.WIDTH, y * self.HEIGHT)
 
-        # num_rows = math.ceil(8 / float(num_per_row))
-        # min_height = num_rows * self.HEIGHT
-        # self.setFixedHeight(min_height)
-
-    def delete_question(self, qid):
-        remove_index = self.qid_list.index(qid)
-        if (remove_index):
-            print(qid)
-            # del self.qid_list[remove_index]
-
-    def open_question(self, qid):
-        print(qid)
-        return
-
-
-    def clear_questions(self): #TODO
-        return
+        num_rows = math.ceil(len(self._child_widgets) / float(num_per_row))
+        min_height = num_rows * self.HEIGHT
+        self.setFixedHeight(min_height)
 
 
     def resizeEvent(self, QResizeEvent):
         self._move_panels()
-
 
 if __name__ == '__main__':
 #    import callback_fix

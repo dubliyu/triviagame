@@ -50,6 +50,8 @@ class Main_Window(QtWidgets.QMainWindow):
   timer_thread.start()
   time_left = 0
   current_image_selection = Path('img\default.jpeg')
+  question_manager_widget = None
+  edit_question = None
 
   def __init__(self):
     super(Main_Window, self).__init__()
@@ -58,6 +60,7 @@ class Main_Window(QtWidgets.QMainWindow):
     centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
     frameGm.moveCenter(centerPoint)
     grid_radio_buttons = QtWidgets.QButtonGroup()
+    self.question_manager_widget = QuestionManagerWidget() #start instance
 
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
@@ -128,7 +131,7 @@ class Main_Window(QtWidgets.QMainWindow):
     self.ui.lineEdit_8.setMaxLength(80)
     self.grid_radio_buttons = QtWidgets.QButtonGroup()
     self.ui.pushButton_23.clicked.connect(self.scrape_from_url)
-    self.ui.pushButton_25.clicked.connect(self.add_question_from_manager)
+    self.ui.pushButton_25.clicked.connect(lambda: self.add_question_from_manager())
     self.ui.open_image_button.clicked.connect(self.add_image)
     self.ui.lcdNumber.display(30)
 
@@ -282,11 +285,13 @@ class Main_Window(QtWidgets.QMainWindow):
   def QuestionManagerPage(self):
     self.current_image_selection = Path('img\default.jpeg')
     self.ui.stackedWidget.setCurrentIndex(9)
-    self.populate_question_manager()
+    self._reset_question_manager()
 
   # Moves to add question menu
   def AddQuestionPage(self):
     self.ui.stackedWidget.setCurrentIndex(10)
+
+
 
   # Exits current game and moves to Player Menu from Game interface
   def quitGame(self):
@@ -359,6 +364,7 @@ class Main_Window(QtWidgets.QMainWindow):
 
   # Opens image from file dialog
   def add_question_from_manager(self):
+    print('pressed button')
     name = str(self.ui.lineEdit_8.text())
     user_price = str(self.ui.lineEdit_9.text())
     description = str(self.ui.plainTextEdit.toPlainText())
@@ -381,16 +387,36 @@ class Main_Window(QtWidgets.QMainWindow):
       if os.path.isdir("./temp"):
         for file in Path('temp').iterdir():
           os.remove(file)
+    if self.edit_question:
+      self.edit_question.setName(name)
+      print(f'New name: {self.edit_question.getName()}')
+      self.edit_question.setPrice(user_price)
+      self.edit_question.setDescription(user_price)
+      new_path = self.edit_question.generateImagePath()
+      self.edit_question.updateQuestion()
+    else:
+      print('whoops its saving a new question')
+      question = Question(name, price, description)
+      new_path = question.img_path
+      self.question_manager_widget.add_question_widget(question)
 
-      self.ui.lineEdit_8.setText('')
-      self.ui.lineEdit_9.setText('')
-      self.ui.plainTextEdit.setPlainText('')
-      self.ui.lineEdit_7.setText('')
-      self.grid_column = 0
-      self.grid_row = 0
-      self.clear_grid()
-      self.current_image_selection = Path('img\default.jpeg')
-      self.QuestionManagerPage()
+    im = Image.open(path)
+    im = im.convert('RGB')
+    im.save(new_path, 'JPEG') #converts to jpeg for compression
+    # shutil.copy(str(path), new_path)
+    for file in Path('temp').iterdir():
+      os.remove(file)
+
+    self.ui.lineEdit_8.setText('')
+    self.ui.lineEdit_9.setText('')
+    self.ui.plainTextEdit.setPlainText('')
+    self.ui.lineEdit_7.setText('')
+    self.grid_column = 0
+    self.grid_row = 0
+    self.clear_grid()
+    self.current_image_selection = Path('img\default.jpeg')
+    self.edit_question = None
+    self.QuestionManagerPage()
 
   def clear_grid(self):
     while self.ui.gridLayout_3.count():
@@ -401,13 +427,44 @@ class Main_Window(QtWidgets.QMainWindow):
           child.widget().deleteLater()
 
   def populate_question_manager(self):
-    questions_widget = QuestionManagerWidget()
-    self.ui.verticalLayout_10.addWidget(questions_widget) # this works but its not the right layout
-    # self.ui.horizontalLayout_20.addWidget(questions_widget) #  TODO this is what is mean to work
-    self.ui.scrollArea_3.setWidget(questions_widget)
+    self.ui.scrollArea_3.setAutoFillBackground(False)
+    self.question_manager_widget = QuestionManagerWidget()
+    for qid in Question.get_question_ids():
+      self._add_question_to_manager(Question.createQuestion(qid))
+
+    # self.ui.scrollArea_3.setFixedHeight(self.question_manager_widget.height())
+    self.ui.scrollArea_3.setWidget(self.question_manager_widget)
+    self.ui.scrollArea_3.setAutoFillBackground(False)
+    pal = QPalette()
+    pal.setColor(QtGui.QPalette.Background, QtCore.Qt.darkGray)
+    self.ui.scrollArea_3.setPalette(pal) #TODO this isnt working
 
 
-    
+  def _add_question_to_manager(self, question):
+    buttons = self.question_manager_widget.add_question_widget(question)
+    buttons[0].clicked.connect(lambda: self._open_question_edit(question))
+    buttons[1].clicked.connect(lambda: self.deleteQuestion(question))
+
+  def _delete_question_from_manager(self, question):
+    Question.removeQuestion(question.getID())
+    self._reset_question_manager()
+    return
+
+  def _open_question_edit(self, question):
+    self.ui.lineEdit_7.setText('')
+    self.ui.lineEdit_8.setText(question.getName())
+    self.ui.lineEdit_9.setText(f'{(question.getPrice()/100):.2f}')
+    self.ui.plainTextEdit.setPlainText(question.getDescription())
+    self.add_image_to_grid(question.getImagePath(), True)
+    self.edit_question = question
+    self.AddQuestionPage()
+    return
+
+  def _reset_question_manager(self):
+    self.question_manager_widget.deleteLater()
+    self.populate_question_manager()
+
+
 
   # Empties Add Question menu fields and moves to Question Manager page
   def cancelQuestion(self):
@@ -419,6 +476,14 @@ class Main_Window(QtWidgets.QMainWindow):
       self.ui.lineEdit_9.setText('')
       self.ui.plainTextEdit.setPlainText('')
       self.clear_grid()
+      self.edit_question = None
+    if back_prompt == QtWidgets.QMessageBox.Cancel:
+      pass
+
+  def deleteQuestion(self, question):
+    back_prompt = QtWidgets.QMessageBox.question(self, 'Delete', 'Question will be permanently erased',QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+    if back_prompt == QtWidgets.QMessageBox.Ok:
+      self._delete_question_from_manager(question)
     if back_prompt == QtWidgets.QMessageBox.Cancel:
       pass
 
