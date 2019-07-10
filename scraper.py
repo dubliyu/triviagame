@@ -212,6 +212,8 @@ def download_images(title, img_urls):
   paths = []
 
   for img in img_urls:
+    if img == None:
+      continue
     file_name = Path(_TEMP + title[:10] + '_' + str(img_num) + '.jpg')
     paths.append(file_name)
     img_num += 1
@@ -226,12 +228,15 @@ def download_images(title, img_urls):
           time.sleep(0.5) 
     except TimeoutError:
       print('Timeout occurred. Image could not be retrieved from ' + img)
+      paths.pop()
       pass
     except (urllib.error.URLError, urllib.error.HTTPError):
       print('Data could not be retrieved from ' + img)
+      paths.pop()
       pass
     except:
       print('Exception occurred for' + img)
+      paths.pop()
       continue
     file_name.write_bytes(response.read())
     time.sleep(1) # Delay between downloads
