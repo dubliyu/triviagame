@@ -212,7 +212,7 @@ def download_images(title, img_urls):
   paths = []
 
   for img in img_urls:
-  	if img == None: continue
+    if img == None: continue
     file_name = Path(_TEMP + title[:10] + '_' + str(img_num) + '.jpg')
     paths.append(file_name)
     img_num += 1
