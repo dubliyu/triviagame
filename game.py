@@ -34,11 +34,10 @@ class Game:
         qid = random.choice(qid_list)
         self.question_list.append(Question.createQuestion(qid))
         qid_list.remove(qid)
-        print (f'Loaded Q{x+1} - Name: {self.question_list[x].getName()}')
     
     self.current_question = 1
     self.number_of_questions = x
-    print(f'Loaded a total of {x} questions.')
+
 
   def get_question(self):
     if self.current_question <= self.number_of_questions:
