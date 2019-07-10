@@ -13,7 +13,7 @@ from question import Question
 # from app import mywindow
 
 class Game:
-  MAX_QUESTIONS = 10
+  MAX_QUESTIONS = 11
   current_question = 1
   number_of_questions = 0
   question_list = []
