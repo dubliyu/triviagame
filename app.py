@@ -11,6 +11,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from window import Ui_MainWindow
 from threading import Thread, currentThread
+import warnings
 from PIL import Image
 from scraper import *
 from question import *
@@ -522,8 +523,13 @@ def show_error(page, error):
   error_prompt = QtWidgets.QMessageBox.warning(page, 'Error', error_msg, QtWidgets.QMessageBox.Ok)
   if error_prompt == QtWidgets.QMessageBox.Ok:
     pass
+def handler(msg_type, msg_log_context, msg_string):
+  pass
+
 
 if __name__ == '__main__':
+  QtCore.qInstallMessageHandler(handler)
+  warnings.filterwarnings('ignore')
   app = QtWidgets.QApplication([])
   w = Main_Window()
   # score = Score_Window()
