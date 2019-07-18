@@ -304,6 +304,9 @@ class Main_Window(QtWidgets.QMainWindow):
     quit_prompt = QtWidgets.QMessageBox.question(self, 'Quit Game', 'Current score will be discarded', QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
     if quit_prompt == QtWidgets.QMessageBox.Ok:
       self.PlayerMainMenu()
+      self.stop_timer()
+      self.game_instance.calculate_score(0, 0)
+
     if quit_prompt == QtWidgets.QMessageBox.Cancel:
       pass
 
@@ -402,7 +405,7 @@ class Main_Window(QtWidgets.QMainWindow):
     else:
       question = Question(name, price, description)
       new_path = question.img_path
-      self.question_manager_widget.add_question_widget(question)
+      question.removeQuestion(question.getID())
 
     im = Image.open(path)
     im = im.convert('RGB')
