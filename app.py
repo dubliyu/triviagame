@@ -206,7 +206,6 @@ class Main_Window(QtWidgets.QMainWindow):
         self.next_question_pushed = True
         self.ui.lineEdit_6.setReadOnly(True)
         self.ui.pushButton_9.setText('NEXT')
-        self.stop_timer()
       else:
         #QtWidgets.QMessageBox.about(self, 'Error','Invalid price formatting.')
         show_error(self, 'Invalid price formatting.')
@@ -232,7 +231,7 @@ class Main_Window(QtWidgets.QMainWindow):
     else:
       return False
     current_score = self.game_instance.calculate_score(price_int, 30 - self.time_left)
-
+    self.stop_timer()
     msg = 'Your guess is ' + current_score.get_label() + '!\n\n Your score is ' + str(current_score.get_score()) + ' points!'
     score_prompt = QtWidgets.QMessageBox.information(self, 'Score', msg, QtWidgets.QMessageBox.Ok)
     if score_prompt == QtWidgets.QMessageBox.Ok:
@@ -277,6 +276,8 @@ class Main_Window(QtWidgets.QMainWindow):
 
   # Moves to game page
   def GamePage(self):
+    self.ui.lineEdit_6.setReadOnly(False)
+    self.ui.lineEdit_6.setText('')
     self.ui.stackedWidget.setCurrentIndex(5)
     self.ui.pushButton_9.setText('SUBMIT')
     if not self.game_instance.next_question(): #loads new questions if no new questions found
@@ -306,6 +307,7 @@ class Main_Window(QtWidgets.QMainWindow):
       self.PlayerMainMenu()
       self.stop_timer()
       self.game_instance.calculate_score(0, 0)
+      self.next_question_pushed = False
 
     if quit_prompt == QtWidgets.QMessageBox.Cancel:
       pass
